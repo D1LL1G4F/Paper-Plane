@@ -70,8 +70,7 @@
     "flowtype/require-valid-file-annotation": "off",
     "flowtype/no-types-missing-file-annotation": "off",
     "flowtype/require-inexact-type": "off",
-    "flowtype/no-unused-expressions": "off",
-    "import/no-extraneous-dependencies": ["error", { "devDependencies": ["**/*.test.ts", "**/*.test.tsx"] }]
+    "flowtype/no-unused-expressions": "off"
   },
   "settings": {
     "import/resolver": {
