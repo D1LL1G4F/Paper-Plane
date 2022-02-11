@@ -41,8 +41,11 @@ const Navbar = (): ReactElement => (
         />
       </TextLink>
       <LinkList direction="row">
-        <TextLink type="white" href="/">
+        <TextLink type="white" href="/projects">
           Projects
+        </TextLink>
+        <TextLink type="white" href="/projects/MyProject">
+          [WIP] My Project
         </TextLink>
       </LinkList>
       <Stack inline>
