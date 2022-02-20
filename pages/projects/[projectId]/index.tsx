@@ -4,16 +4,13 @@ import styled from "styled-components";
 import Grid from "@kiwicom/orbit-components/lib/utils/Grid";
 import Stack from "@kiwicom/orbit-components/lib/Stack";
 import Button from "@kiwicom/orbit-components/lib/Button";
-import Plus from "@kiwicom/orbit-components/lib/icons/Plus";
+import { Plus } from "@kiwicom/orbit-components/lib/icons";
 import Box from "@kiwicom/orbit-components/lib/Box";
-import { CardSection } from "@kiwicom/orbit-components/lib/Card";
-import TileGroup from "@kiwicom/orbit-components/lib/TileGroup";
-import Tile from "@kiwicom/orbit-components/lib/Tile";
-import Text from "@kiwicom/orbit-components/lib/Text";
-import { Check, Alert, Send } from "@kiwicom/orbit-components/lib/icons";
-import ButtonLink from "@kiwicom/orbit-components/lib/ButtonLink";
-import { Badge } from "@kiwicom/orbit-components";
-import { Edit } from "@kiwicom/orbit-components/es/icons";
+import MockGroupCard, { MockGroup } from "../../../components/MockGroupCard";
+import InputGroup from "@kiwicom/orbit-components/lib/InputGroup";
+import InputField from "@kiwicom/orbit-components/lib/InputField";
+import Select from "@kiwicom/orbit-components/lib/Select";
+import { ChangeEvent, useState } from "react";
 
 const PageGrid = styled(Grid)`
   width: 100%;
@@ -31,20 +28,6 @@ const PageSidebar = styled.aside`
 const layoutOptions = {
   maxWidth: "100%",
   columns: "2fr minmax(272px, 5fr)",
-};
-
-type Mock = {
-  title: string;
-  description?: string;
-  id: string;
-  status: "active" | "outdated";
-};
-
-type MockGroup = {
-  mocks: Array<Mock>;
-  id: string;
-  title: string;
-  description: string;
 };
 
 const mockGroups: Array<MockGroup> = [
@@ -69,14 +52,51 @@ const mockGroups: Array<MockGroup> = [
   },
 ];
 
+const defaultWebUrlBases = ["https://kiwi.com", "https://localhost:3000"];
+
 const Mocks: NextPage = () => {
+  const [webUrlBase, setWebUrlBase] = useState(defaultWebUrlBases[0]);
+
   return (
     <PageGrid {...layoutOptions}>
       <Grid rows="1fr auto auto">
-        <Stack justify="center">
+        <Stack justify="start" direction="column" align="center">
           <Box padding="XLarge">
             <Heading type="display">Manage My Booking</Heading>
           </Box>
+          <Stack>
+            <Box padding="large">
+              <InputGroup
+                flex={["9 9 15em", "0.5 0.5 0.5em"]}
+                label="Web URL base"
+              >
+                <InputField
+                  onChange={(event) =>
+                    setWebUrlBase(
+                      (event as ChangeEvent<HTMLInputElement>).target.value
+                    )
+                  }
+                  value={webUrlBase}
+                  inputMode="url"
+                />
+                <Select
+                  value={webUrlBase}
+                  onChange={(event) =>
+                    setWebUrlBase(
+                      (event as ChangeEvent<HTMLSelectElement>).target.value
+                    )
+                  }
+                  options={[
+                    ...defaultWebUrlBases.map((url) => ({
+                      value: url,
+                      label: url,
+                    })),
+                    { value: webUrlBase, label: "custom" },
+                  ]}
+                />
+              </InputGroup>
+            </Box>
+          </Stack>
         </Stack>
       </Grid>
       <PageSidebar>
@@ -93,56 +113,7 @@ const Mocks: NextPage = () => {
             </Button>
           </Stack>
           {mockGroups.map((mockGroup) => (
-            <CardSection
-              key={mockGroup.id}
-              expandable
-              expanded
-              title={
-                <Stack inline align="center">
-                  <Heading type="title2">{mockGroup.title}</Heading>
-                  <Button size="small" type="white" iconLeft={<Edit />} />
-                </Stack>
-              }
-              description={mockGroup.description}
-            >
-              <TileGroup>
-                {mockGroup.mocks.map((mock) => (
-                  <Tile noPadding key={mock.id}>
-                    <Stack direction="row" align="center" spacing="none">
-                      <ButtonLink
-                        fullWidth
-                        iconLeft={<Send />}
-                        iconRight={
-                          <Badge
-                            type={
-                              mock.status === "active"
-                                ? "successInverted"
-                                : "criticalInverted"
-                            }
-                            icon={
-                              mock.status === "active" ? <Check /> : <Alert />
-                            }
-                          />
-                        }
-                      >
-                        <Text type="primary" weight="bold">
-                          {mock.title}
-                        </Text>
-                        <Text>{mock.description}</Text>
-                      </ButtonLink>
-                      <Button type="white" iconLeft={<Edit />} />
-                    </Stack>
-                  </Tile>
-                ))}
-                <Tile noPadding>
-                  <Stack justify="center">
-                    <Button fullWidth type="white" iconLeft={<Plus />}>
-                      New Mock
-                    </Button>
-                  </Stack>
-                </Tile>
-              </TileGroup>
-            </CardSection>
+            <MockGroupCard mockGroup={mockGroup} key={mockGroup.id} />
           ))}
         </Stack>
       </PageSidebar>

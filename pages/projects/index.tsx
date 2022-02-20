@@ -14,9 +14,13 @@ export type Project = {
   id: string;
   description: string;
   illustration: IllustrationProps["name"];
+  webUrlBase?: {
+    primary: string;
+    secondary?: Array<string>;
+  };
 };
 
-const projects: Array<Project> = [
+export const projects: Array<Project> = [
   {
     title: "Manage My Booking",
     id: "123",

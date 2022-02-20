@@ -19,7 +19,6 @@ const ProjectCard = ({ project }: ProjectCardProps): ReactElement => {
 
   return (
     <CallOutBanner
-      key={project.id}
       title=""
       illustration={<Illustration name={project.illustration} />}
       onClick={async () => {
