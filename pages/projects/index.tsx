@@ -14,6 +14,7 @@ export type Project = {
   id: string;
   description: string;
   illustration: IllustrationProps["name"];
+  openApiSpecs: Array<string>;
   webUrlBase?: {
     primary: string;
     secondary?: Array<string>;
@@ -26,24 +27,28 @@ export const projects: Array<Project> = [
     id: "123",
     description: "Refunds, Ancillaries, Check-in, Schedule Changes...",
     illustration: "Lounge",
+    openApiSpecs: [],
   },
   {
     title: "Payments",
     id: "3213213",
     description: "Universal payment service",
     illustration: "Money",
+    openApiSpecs: [],
   },
   {
     title: "Search",
     id: "2132",
     description: "Search for air and ground transport.",
     illustration: "DesktopSearch",
+    openApiSpecs: [],
   },
   {
     title: "Booking",
     id: "132131223",
     description: "Trip booking flow.",
     illustration: "OnlineCheckIn",
+    openApiSpecs: [],
   },
 ];
 

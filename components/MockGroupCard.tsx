@@ -7,6 +7,7 @@ import Tile from "@kiwicom/orbit-components/lib/Tile";
 import { Edit, Plus } from "@kiwicom/orbit-components/lib/icons";
 import { ReactElement } from "react";
 import MockTile, { Mock } from "./MockTile";
+import { useRouter } from "next/router";
 
 export type MockGroup = {
   mocks: Array<Mock>;
@@ -20,6 +21,7 @@ type MockGroupProps = {
 };
 
 const MockGroupCard = ({ mockGroup }: MockGroupProps): ReactElement => {
+  const { asPath } = useRouter();
   return (
     <CardSection
       expandable
@@ -38,7 +40,12 @@ const MockGroupCard = ({ mockGroup }: MockGroupProps): ReactElement => {
         ))}
         <Tile noPadding>
           <Stack justify="center">
-            <Button fullWidth type="white" iconLeft={<Plus />}>
+            <Button
+              href={`${asPath}/mock-edit/`}
+              fullWidth
+              type="white"
+              iconLeft={<Plus />}
+            >
               New Mock
             </Button>
           </Stack>

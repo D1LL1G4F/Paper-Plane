@@ -6,6 +6,7 @@ import { Check, Alert, Send, Edit } from "@kiwicom/orbit-components/lib/icons";
 import ButtonLink from "@kiwicom/orbit-components/lib/ButtonLink";
 import { Badge } from "@kiwicom/orbit-components";
 import { ReactElement } from "react";
+import { useRouter } from "next/router";
 
 export type Mock = {
   title: string;
@@ -19,6 +20,8 @@ type MockTileProps = {
 };
 
 const MockTile = ({ mock }: MockTileProps): ReactElement => {
+  const { asPath } = useRouter();
+
   return (
     <Tile noPadding key={mock.id}>
       <Stack direction="row" align="center" spacing="none">
@@ -41,7 +44,11 @@ const MockTile = ({ mock }: MockTileProps): ReactElement => {
           </Text>
           <Text>{mock.description}</Text>
         </ButtonLink>
-        <Button type="white" iconLeft={<Edit />} />
+        <Button
+          href={`${asPath}/mock-edit/${mock.id}`}
+          type="white"
+          iconLeft={<Edit />}
+        />
       </Stack>
     </Tile>
   );

@@ -1,7 +1,5 @@
 import type { NextPage } from "next";
 import Heading from "@kiwicom/orbit-components/lib/Heading";
-import styled from "styled-components";
-import Grid from "@kiwicom/orbit-components/lib/utils/Grid";
 import Stack from "@kiwicom/orbit-components/lib/Stack";
 import Button from "@kiwicom/orbit-components/lib/Button";
 import { Plus } from "@kiwicom/orbit-components/lib/icons";
@@ -11,24 +9,8 @@ import InputGroup from "@kiwicom/orbit-components/lib/InputGroup";
 import InputField from "@kiwicom/orbit-components/lib/InputField";
 import Select from "@kiwicom/orbit-components/lib/Select";
 import { ChangeEvent, useState } from "react";
-
-const PageGrid = styled(Grid)`
-  width: 100%;
-  min-height: 100%;
-  height: fit-content;
-  background: ${({ theme }) => theme.orbit.paletteCloudLight};
-`;
-
-const PageSidebar = styled.aside`
-  background: ${({ theme }) => theme.orbit.paletteWhite};
-  padding: ${({ theme }) => theme.orbit.spaceXLarge};
-  height: 100%;
-`;
-
-const layoutOptions = {
-  maxWidth: "100%",
-  columns: "2fr minmax(272px, 5fr)",
-};
+import Illustration from "@kiwicom/orbit-components/lib/Illustration";
+import Layout from "../../../components/Layout";
 
 const mockGroups: Array<MockGroup> = [
   {
@@ -58,11 +40,19 @@ const Mocks: NextPage = () => {
   const [webUrlBase, setWebUrlBase] = useState(defaultWebUrlBases[0]);
 
   return (
-    <PageGrid {...layoutOptions}>
-      <Grid rows="1fr auto auto">
+    <Layout
+      sidebar={
         <Stack justify="start" direction="column" align="center">
           <Box padding="XLarge">
-            <Heading type="display">Manage My Booking</Heading>
+            <Stack direction="column" spacing="large">
+              <Heading type="display">Manage My Booking</Heading>
+              <Heading type="displaySubtitle">
+                Refunds, Ancillaries, Check-in, Schedule Changes...
+              </Heading>
+              <Stack align="center" justify="center">
+                <Illustration name="Lounge" />
+              </Stack>
+            </Stack>
           </Box>
           <Stack>
             <Box padding="large">
@@ -98,26 +88,25 @@ const Mocks: NextPage = () => {
             </Box>
           </Stack>
         </Stack>
-      </Grid>
-      <PageSidebar>
-        <Stack direction="column">
-          <Stack direction="row-reverse">
-            <Button
-              circled
-              size="large"
-              iconLeft={<Plus />}
-              title="Create new Mock"
-              type="secondary"
-            >
-              New Mock Group
-            </Button>
-          </Stack>
-          {mockGroups.map((mockGroup) => (
-            <MockGroupCard mockGroup={mockGroup} key={mockGroup.id} />
-          ))}
+      }
+    >
+      <Stack direction="column">
+        <Stack direction="row-reverse">
+          <Button
+            circled
+            size="large"
+            iconLeft={<Plus />}
+            title="Create new Mock"
+            type="secondary"
+          >
+            New Mock Group
+          </Button>
         </Stack>
-      </PageSidebar>
-    </PageGrid>
+        {mockGroups.map((mockGroup) => (
+          <MockGroupCard mockGroup={mockGroup} key={mockGroup.id} />
+        ))}
+      </Stack>
+    </Layout>
   );
 };
 
