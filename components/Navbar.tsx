@@ -4,10 +4,15 @@ import mq from "@kiwicom/orbit-components/lib/utils/mediaQuery";
 import LinkList from "@kiwicom/orbit-components/lib/LinkList";
 import TextLink from "@kiwicom/orbit-components/lib/TextLink";
 import Stack from "@kiwicom/orbit-components/lib/Stack";
-import GitHubLogo from "/public/GitHub-Logo-32x32.png";
 import PaperPlaneLogo from "/public/PaperPlaneLogo640x464.png";
 import styled, { css } from "styled-components";
 import Image from "next/image";
+import { useAuth } from "./contexts/Auth";
+import firebase from "firebase/compat/app";
+import "firebase/compat/auth";
+import { useRouter } from "next/router";
+import Tooltip from "@kiwicom/orbit-components/lib/primitives/TooltipPrimitive";
+import Box from "@kiwicom/orbit-components/lib/Box";
 
 const StyledNavigationBar = styled.nav`
   position: fixed;
@@ -29,37 +34,57 @@ const StyledNavigationBar = styled.nav`
   `)};
 `;
 
-const Navbar = (): ReactElement => (
-  <StyledNavigationBar>
-    <Stack direction="row" align="center" justify="center">
-      <TextLink href="/">
-        <Image
-          src={PaperPlaneLogo}
-          width={80}
-          height={58}
-          alt="Paper Plane Logo"
-        />
-      </TextLink>
-      <LinkList direction="row">
-        <TextLink type="white" href="/projects">
-          Projects
+const AvatarImg = styled.img`
+  vertical-align: middle;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+`;
+
+const Navbar = (): ReactElement => {
+  const auth = useAuth();
+  const { push } = useRouter();
+
+  const logoutHandler = () => {
+    firebase
+      .auth()
+      .signOut()
+      .then(() => push("/"));
+  };
+
+  return (
+    <StyledNavigationBar>
+      <Stack direction="row" align="center" justify="center">
+        <TextLink href="/">
+          <Image
+            src={PaperPlaneLogo}
+            width={115}
+            height={84}
+            alt="Paper Plane Logo"
+          />
         </TextLink>
-        <TextLink type="white" href="/projects/MyProject">
-          [WIP] My Project
-        </TextLink>
-      </LinkList>
-      <Stack inline>
         <LinkList direction="row">
-          <TextLink
-            type="secondary"
-            href="https://github.com/D1LL1G4F/Paper-Plane"
-          >
-            <Image src={GitHubLogo} alt="GitHub" />
+          <TextLink type="white" href="/projects">
+            Projects
           </TextLink>
         </LinkList>
+        <Stack inline>
+          {auth && (
+            <Stack justify="center" align="center" inline>
+              <Tooltip content={auth.email}>
+                <AvatarImg src={auth.photoURL as string} />
+              </Tooltip>
+              <Box padding={{ right: "medium" }}>
+                <TextLink type="white" onClick={logoutHandler}>
+                  Logout
+                </TextLink>
+              </Box>
+            </Stack>
+          )}
+        </Stack>
       </Stack>
-    </Stack>
-  </StyledNavigationBar>
-);
+    </StyledNavigationBar>
+  );
+};
 
 export default Navbar;
