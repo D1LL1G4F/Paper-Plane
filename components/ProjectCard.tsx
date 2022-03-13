@@ -37,7 +37,7 @@ const ProjectCard = ({ project }: ProjectCardProps): ReactElement => {
             type="white"
             onClick={async (e) => {
               e.stopPropagation();
-              await push(`projects/${project.id}/settings`);
+              await push(`projects/project-edit/${project.id}`);
             }}
           />
         </Stack>

@@ -63,11 +63,13 @@ const Navbar = (): ReactElement => {
             alt="Paper Plane Logo"
           />
         </TextLink>
-        <LinkList direction="row">
-          <TextLink type="white" href="/projects">
-            Projects
-          </TextLink>
-        </LinkList>
+        {auth && (
+          <LinkList direction="row">
+            <TextLink type="white" href="/projects">
+              Projects
+            </TextLink>
+          </LinkList>
+        )}
         <Stack inline>
           {auth && (
             <Stack justify="center" align="center" inline>

@@ -8,6 +8,7 @@ import { Props as IllustrationProps } from "@kiwicom/orbit-components/lib/Illust
 import ProjectCard from "../../components/ProjectCard";
 import { Plus } from "@kiwicom/orbit-components/icons";
 import Button from "@kiwicom/orbit-components/lib/Button";
+import { useRouter } from "next/router";
 
 export type Project = {
   title: string;
@@ -53,6 +54,7 @@ export const projects: Array<Project> = [
 ];
 
 const Projects: NextPage = () => {
+  const { push } = useRouter();
   return (
     <Layout type="MMB">
       <LayoutColumn>
@@ -64,6 +66,9 @@ const Projects: NextPage = () => {
               iconLeft={<Plus />}
               title="Create new project"
               type="secondary"
+              onClick={() => {
+                push(`projects/project-edit`);
+              }}
             >
               New Project
             </Button>
