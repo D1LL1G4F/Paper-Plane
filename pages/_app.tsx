@@ -9,6 +9,9 @@ import firebase from "firebase/compat/app";
 import "normalize.css/normalize.css";
 import firebaseConfig from "../utils/firebaseConfig";
 import { AuthProvider } from "../components/contexts/Auth";
+import { QueryClient, QueryClientProvider } from "react-query";
+import JSONSchemaFaker from "json-schema-faker";
+import Chance from "chance";
 
 const NavContainer = styled.header`
   z-index: 99;
@@ -20,17 +23,31 @@ const GridWrapper = styled(Grid)`
 `;
 
 firebase.initializeApp(firebaseConfig);
+const queryClient = new QueryClient();
+JSONSchemaFaker.extend("chance", () => new Chance(42));
+JSONSchemaFaker.option({
+  minItems: 2,
+  maxItems: 2,
+  ignoreMissingRefs: true,
+  failOnInvalidTypes: false,
+  failOnInvalidFormat: false,
+  reuseProperties: true,
+  alwaysFakeOptionals: true,
+  random: () => 0.79,
+});
 
 function MyApp({ Component, pageProps }: AppProps): ReactElement {
   return (
     <ThemeProvider theme={defaultTheme}>
       <AuthProvider>
-        <GridWrapper rows="64px 1fr">
-          <NavContainer>
-            <Navbar />
-          </NavContainer>
-          <Component {...pageProps} />
-        </GridWrapper>
+        <QueryClientProvider client={queryClient}>
+          <GridWrapper rows="64px 1fr">
+            <NavContainer>
+              <Navbar />
+            </NavContainer>
+            <Component {...pageProps} />
+          </GridWrapper>
+        </QueryClientProvider>
       </AuthProvider>
     </ThemeProvider>
   );
