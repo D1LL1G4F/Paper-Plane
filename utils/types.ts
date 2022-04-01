@@ -10,7 +10,7 @@ export type EndpointMock = {
 export type ApiMock = {
   type: "OpenAPI" | "Custom";
   title: string;
-  description: string;
+  description?: string;
   openAPISchemaUrl: string;
   endpointMockCollection: Array<EndpointMock>;
 };

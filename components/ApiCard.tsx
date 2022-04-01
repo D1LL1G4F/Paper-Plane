@@ -8,13 +8,19 @@ import { ApiMock } from "../utils/types";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - https://github.com/AndrewRedican/react-json-editor-ajrm/issues/163
 import locale from "react-json-editor-ajrm/locale/en";
+import { Controller, UseFormReturn } from "react-hook-form";
+
+type ApiCardProps = ApiMock & {
+  form: UseFormReturn<ApiMock, unknown>;
+};
 
 const ApiCard = ({
   title,
   description,
   openAPISchemaUrl,
   endpointMockCollection,
-}: ApiMock): JSX.Element => {
+  form,
+}: ApiCardProps): JSX.Element => {
   return (
     <Collapse
       label={
@@ -34,17 +40,24 @@ const ApiCard = ({
           expandable
           title={
             <Stack direction="row">
-              <Text weight="bold">{endpointMock.method}</Text>
+              <Text weight="bold">{endpointMock.method.toUpperCase()}</Text>
               <Text>{endpointMock.summary}</Text>
             </Stack>
           }
           description={endpointMock.description}
         >
-          <JSONInput
-            placeholder={endpointMock.responseObject}
-            locale={locale}
-            height="550px"
-            width="100%"
+          <Controller
+            name="openAPISchemaUrl"
+            control={form.control}
+            render={({ field }) => (
+              <JSONInput
+                {...field}
+                placeholder={endpointMock.responseObject}
+                locale={locale}
+                height="550px"
+                width="100%"
+              />
+            )}
           />
         </CardSection>
       ))}

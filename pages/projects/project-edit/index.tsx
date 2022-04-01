@@ -27,7 +27,7 @@ type ProjectEditForm = {
   apiMockCollection: Array<ApiMock>;
 };
 
-const schema = z.object({
+const projectEditSchema = z.object({
   projectName: z.string().min(1, { message: "Required" }),
   projectDescription: z.string().min(1, { message: "Required" }),
   illustration: z.string().min(1, { message: "Required" }),
@@ -35,7 +35,7 @@ const schema = z.object({
 
 const ProjectEdit: NextPage = () => {
   const { handleSubmit, watch, control } = useForm<ProjectEditForm>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(projectEditSchema),
   });
   const [isAddNewAPIModalVisible, setIsAddNewAPIModalVisible] =
     useState<boolean>(false);

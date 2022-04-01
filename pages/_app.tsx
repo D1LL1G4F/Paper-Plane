@@ -12,6 +12,7 @@ import { AuthProvider } from "../components/contexts/Auth";
 import { QueryClient, QueryClientProvider } from "react-query";
 import JSONSchemaFaker from "json-schema-faker";
 import Chance from "chance";
+import { ReactQueryDevtools } from "react-query/devtools";
 
 const NavContainer = styled.header`
   z-index: 99;
@@ -47,6 +48,7 @@ function MyApp({ Component, pageProps }: AppProps): ReactElement {
             </NavContainer>
             <Component {...pageProps} />
           </GridWrapper>
+          <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </AuthProvider>
     </ThemeProvider>
