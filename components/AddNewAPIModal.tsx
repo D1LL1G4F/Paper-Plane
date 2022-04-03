@@ -5,7 +5,6 @@ import Modal, {
   ModalSection,
 } from "@kiwicom/orbit-components/lib/Modal";
 import useGetMockedOpenAPI from "../utils/hooks/useGetMockedOpenAPI";
-import { z } from "zod";
 import { ApiMock } from "../utils/types";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,6 +15,8 @@ import { Separator } from "@kiwicom/orbit-components";
 import ApiCard from "./ApiCard";
 import { useEffect } from "react";
 import Alert from "@kiwicom/orbit-components/lib/alert";
+import { DevTool } from "@hookform/devtools";
+import { apiMockEditValidationSchema } from "../utils/validationSchemas";
 
 type AddNewAPIModalProps = {
   onClose: () => void;
@@ -23,28 +24,10 @@ type AddNewAPIModalProps = {
 
 type ApiMockEditForm = ApiMock;
 
-const apiMockEditSchema = z.object({
-  type: z.string().regex(/OpenAPI|Custom/),
-  title: z.string().min(1, { message: "Required" }),
-  description: z.string().optional(),
-  openAPISchemaUrl: z.string().url().min(1, { message: "Required" }),
-  endpointMockCollection: z.array(
-    z.object({
-      endpointPath: z.string(),
-      responseStatus: z.number(),
-      responseObject: z.any(),
-      method: z.string(),
-      summary: z.string(),
-      description: z.string(),
-    })
-  ),
-});
-
 const AddNewAPIModal = ({ onClose }: AddNewAPIModalProps): JSX.Element => {
   const form = useForm<ApiMockEditForm>({
     mode: "all",
-    shouldUnregister: true,
-    resolver: zodResolver(apiMockEditSchema),
+    resolver: zodResolver(apiMockEditValidationSchema),
   });
   const { handleSubmit, control, watch, setValue, register, getFieldState } =
     form;
@@ -56,10 +39,7 @@ const AddNewAPIModal = ({ onClose }: AddNewAPIModalProps): JSX.Element => {
     data: apiMock,
     isLoading,
     error,
-  } = useGetMockedOpenAPI(
-    // do not fetch when not valid URL
-    watch("openAPISchemaUrl")
-  );
+  } = useGetMockedOpenAPI(watch("openAPISchemaUrl"));
 
   useEffect(() => {
     register("title");
@@ -117,6 +97,7 @@ const AddNewAPIModal = ({ onClose }: AddNewAPIModalProps): JSX.Element => {
             </Button>
           </ModalFooter>
         </Modal>
+        <DevTool control={control} />
       </form>
     </Portal>
   );
