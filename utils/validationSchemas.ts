@@ -1,7 +1,12 @@
 import { z } from "zod";
+import {
+  ApiMockTypeEnum,
+  EndpointMockMethodEnum,
+  EndpointMockValidityEnum,
+} from "./types";
 
 export const apiMockEditValidationSchema = z.object({
-  type: z.string().regex(/OpenAPI|Custom/),
+  type: z.nativeEnum(ApiMockTypeEnum),
   title: z.string().min(1, { message: "Required" }),
   description: z.string().optional(),
   openAPISchemaUrl: z.string().url().min(1, { message: "Required" }),
@@ -12,11 +17,10 @@ export const apiMockEditValidationSchema = z.object({
       responseObject: z.nullable(
         z.object({}).passthrough().or(z.array(z.any()))
       ),
-      method: z
-        .string()
-        .regex(/get|post|put|head|delete|patch|options|connect|trace/),
+      method: z.nativeEnum(EndpointMockMethodEnum),
       summary: z.string().optional(),
       description: z.string().optional(),
+      validity: z.nativeEnum(EndpointMockValidityEnum),
     })
   ),
 });

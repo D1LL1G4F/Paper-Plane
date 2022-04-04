@@ -9,8 +9,11 @@ import { ApiMock, JSONInputContentType } from "../utils/types";
 // @ts-ignore - https://github.com/AndrewRedican/react-json-editor-ajrm/issues/163
 import locale from "react-json-editor-ajrm/locale/en";
 import { Controller, useFieldArray, UseFormReturn } from "react-hook-form";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import InputField from "@kiwicom/orbit-components/lib/InputField";
+import validateResponseObject from "../utils/validateResponseObject";
+import useGetOpenAPISchema from "../utils/hooks/useGetOpenAPISchema";
+import EndpointMockValidityIcon from "./EndpointMockValidityIcon";
 
 type ApiCardProps = ApiMock & {
   form: UseFormReturn<ApiMock, unknown>;
@@ -23,16 +26,56 @@ const ApiCard = ({
   endpointMockCollection,
   form,
 }: ApiCardProps): JSX.Element => {
-  const { fields, append } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "endpointMockCollection",
   });
+  const { data: openAPISchema } = useGetOpenAPISchema(
+    form.getValues("openAPISchemaUrl")
+  );
 
   useEffect(() => {
+    remove();
     endpointMockCollection.forEach((endpointMock) => {
       append(endpointMock);
     });
-  });
+  }, [append, endpointMockCollection, remove]);
+
+  const onJSONInputChange = useCallback(
+    (form: UseFormReturn<ApiMock, unknown>, index: number) =>
+      ({ error, jsObject }: JSONInputContentType) => {
+        if (error) {
+          form.setError(`endpointMockCollection.${index}.responseObject`, {
+            type: "custom",
+            message: error.reason,
+          });
+        } else {
+          form.clearErrors(`endpointMockCollection.${index}.responseObject`);
+        }
+        const path = form.getValues(
+          `endpointMockCollection.${index}.endpointPath`
+        );
+        const method = form.getValues(`endpointMockCollection.${index}.method`);
+        const statusCode = form.getValues(
+          `endpointMockCollection.${index}.responseStatus`
+        );
+        form.setValue(
+          `endpointMockCollection.${index}.validity`,
+          validateResponseObject(
+            openAPISchema,
+            jsObject,
+            path,
+            method,
+            statusCode
+          )
+        );
+        form.setValue(
+          `endpointMockCollection.${index}.responseObject`,
+          jsObject
+        );
+      },
+    [openAPISchema]
+  );
 
   return (
     <Collapse
@@ -53,6 +96,11 @@ const ApiCard = ({
           expandable
           title={
             <Stack direction="row">
+              <EndpointMockValidityIcon
+                validity={form.watch(
+                  `endpointMockCollection.${index}.validity`
+                )}
+              />
               <Text weight="bold">{field.method.toUpperCase()}</Text>
               <Text>{field.endpointPath}</Text>
             </Stack>
@@ -85,22 +133,7 @@ const ApiCard = ({
               render={({ field: renderField }) => (
                 <JSONInput
                   {...renderField}
-                  onChange={({ error, jsObject }: JSONInputContentType) => {
-                    if (error) {
-                      form.setError(
-                        `endpointMockCollection.${index}.responseObject`,
-                        { type: "custom", message: error.reason }
-                      );
-                    } else {
-                      form.clearErrors(
-                        `endpointMockCollection.${index}.responseObject`
-                      );
-                    }
-                    form.setValue(
-                      `endpointMockCollection.${index}.responseObject`,
-                      jsObject
-                    );
-                  }}
+                  onChange={onJSONInputChange(form, index)}
                   placeholder={renderField.value}
                   locale={locale}
                   height="550px"

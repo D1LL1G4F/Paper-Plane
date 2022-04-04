@@ -1,4 +1,10 @@
-import { ApiMock, EndpointMock } from "./types";
+import {
+  ApiMock,
+  ApiMockTypeEnum,
+  EndpointMock,
+  EndpointMockMethodEnum,
+  EndpointMockValidityEnum,
+} from "./types";
 import _ from "lodash";
 import { OpenAPI, OpenAPIV3 } from "openapi-types";
 
@@ -29,7 +35,8 @@ const transformToAPIMock = (fakeSchema: OpenAPI.Document): ApiMock | null => {
             (endpointData as OpenAPI.Operation)?.responses?.[status]?.schema ||
             null;
           acc.push({
-            method,
+            method: method as EndpointMockMethodEnum,
+            validity: EndpointMockValidityEnum.VALID,
             summary: (endpointData as OpenAPI.Operation)?.summary || "",
             description: (endpointData as OpenAPI.Operation)?.description || "",
             endpointPath: path,
@@ -44,7 +51,7 @@ const transformToAPIMock = (fakeSchema: OpenAPI.Document): ApiMock | null => {
   );
 
   return {
-    type: "OpenAPI",
+    type: ApiMockTypeEnum.OPENAPI,
     title: fakeSchema.info.title,
     description: fakeSchema.info.description || "",
     openAPISchemaUrl:

@@ -1,5 +1,5 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const ZSchema = require(`z-schema`);
+import { EndpointMockValidityEnum } from "./types";
+import ZSchema from "z-schema";
 
 const validateResponseObject = (
   openAPISchema: unknown,
@@ -7,7 +7,10 @@ const validateResponseObject = (
   path: string,
   method: string,
   statusCode: number
-): boolean => {
+): EndpointMockValidityEnum => {
+  if (!openAPISchema) {
+    return EndpointMockValidityEnum.WITHOUT_SCHEMA;
+  }
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   const schemaPath = openAPISchema?.openapi
@@ -15,10 +18,19 @@ const validateResponseObject = (
     : `paths.["${path}"].${method}.responses.["${statusCode}"].schema`;
   ZSchema.registerFormat("int64", (val: unknown) => Number.isInteger(val));
   ZSchema.registerFormat("int32", (val: unknown) => Number.isInteger(val));
-  const validator = new ZSchema();
-  return validator.validate(responseObject, openAPISchema, {
-    schemaPath,
-  });
+  const validator = new ZSchema({});
+  try {
+    const isValid = validator.validate(responseObject, openAPISchema, {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore - z-schema is missing one function overload type which supports options object with schemaPath
+      schemaPath,
+    });
+    return isValid
+      ? EndpointMockValidityEnum.VALID
+      : EndpointMockValidityEnum.VIOLATES_SCHEMA;
+  } catch (e) {
+    return EndpointMockValidityEnum.WITHOUT_SCHEMA;
+  }
 };
 
 export default validateResponseObject;

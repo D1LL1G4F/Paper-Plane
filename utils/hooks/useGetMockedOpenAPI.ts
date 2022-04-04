@@ -1,24 +1,35 @@
-import { QueryKey, useQuery, UseQueryResult } from "react-query";
-
-import { Schema } from "json-schema-faker";
-import mockOpenApiv3 from "../mockedData/mockOpenApiV3";
 import { ApiMock } from "../types";
 import generateFakeSchema from "../generateFakeSchema";
 import transformToAPIMock from "../transformToAPIMock";
+import useGetOpenAPISchema from "./useGetOpenAPISchema";
+import { UseQueryResult } from "react-query";
 
 const useGetMockedOpenAPI = (
-  openAPIUrl: QueryKey
-): UseQueryResult<ApiMock | null, Error> =>
-  useQuery(openAPIUrl, () => {
-    if (!openAPIUrl) {
-      return null;
+  openAPISchemaUrl: string
+): UseQueryResult<ApiMock | null | undefined, Error> => {
+  const openAPISchemaQueryResult = useGetOpenAPISchema(openAPISchemaUrl);
+  if (!openAPISchemaQueryResult.data) {
+    return openAPISchemaQueryResult as UseQueryResult<undefined, Error>;
+  }
+  try {
+    const fakedSchema = generateFakeSchema(openAPISchemaQueryResult.data);
+    if (!fakedSchema) {
+      return { ...openAPISchemaQueryResult, data: null } as UseQueryResult<
+        null,
+        Error
+      >;
     }
-    const openAPISchema: Schema = mockOpenApiv3;
-    const fakedSchema = generateFakeSchema(openAPISchema);
-
-    if (!fakedSchema) return null;
-
-    return transformToAPIMock(fakedSchema);
-  });
+    return {
+      ...openAPISchemaQueryResult,
+      data: transformToAPIMock(fakedSchema),
+    } as UseQueryResult<ApiMock, Error>;
+  } catch (e) {
+    return {
+      ...openAPISchemaQueryResult,
+      data: null,
+      error: e,
+    } as UseQueryResult<null, Error>;
+  }
+};
 
 export default useGetMockedOpenAPI;

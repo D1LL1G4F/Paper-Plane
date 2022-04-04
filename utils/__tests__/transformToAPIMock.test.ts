@@ -5,6 +5,7 @@ import mockOpenApiV2 from "../mockedData/mockOpenApiV2";
 import { OpenAPI } from "openapi-types";
 import JSONSchemaFaker from "json-schema-faker";
 import Chance from "chance";
+import { EndpointMockValidityEnum } from "../types";
 
 describe("transformToAPIMock", () => {
   JSONSchemaFaker.extend("chance", () => new Chance(42));
@@ -27,6 +28,7 @@ describe("transformToAPIMock", () => {
       {
         endpointPath: "/pets",
         responseStatus: 200,
+        validity: EndpointMockValidityEnum.VALID,
         responseObject: [
           {
             id: 58000000,
@@ -46,6 +48,7 @@ describe("transformToAPIMock", () => {
       {
         endpointPath: "/pets",
         responseStatus: 201,
+        validity: EndpointMockValidityEnum.VALID,
         responseObject: null,
         method: "post",
         summary: "Create a pet",
@@ -54,6 +57,7 @@ describe("transformToAPIMock", () => {
       {
         endpointPath: "/pets/{petId}",
         responseStatus: 200,
+        validity: EndpointMockValidityEnum.VALID,
         responseObject: {
           id: 58000000,
           name: "Lorem ipsum dolor laborum",
@@ -71,7 +75,7 @@ describe("transformToAPIMock", () => {
       generateFakeSchema(mockOpenApiV3) as OpenAPI.Document
     );
 
-    expect(result).toMatchObject(expectedAPIMock);
+    expect(result).toStrictEqual(expectedAPIMock);
   });
 
   it("transforms faked OpenAPI v2 schema to API mock format", () => {
@@ -79,6 +83,6 @@ describe("transformToAPIMock", () => {
       generateFakeSchema(mockOpenApiV2) as OpenAPI.Document
     );
 
-    expect(result).toMatchObject({ ...expectedAPIMock, openAPISchemaUrl: "" });
+    expect(result).toStrictEqual({ ...expectedAPIMock, openAPISchemaUrl: "" });
   });
 });

@@ -5,7 +5,7 @@ import Modal, {
   ModalSection,
 } from "@kiwicom/orbit-components/lib/Modal";
 import useGetMockedOpenAPI from "../utils/hooks/useGetMockedOpenAPI";
-import { ApiMock } from "../utils/types";
+import { ApiMock, ApiMockTypeEnum } from "../utils/types";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Stack from "@kiwicom/orbit-components/lib/Stack";
@@ -46,7 +46,7 @@ const AddNewAPIModal = ({ onClose }: AddNewAPIModalProps): JSX.Element => {
     register("description");
     register("type");
     // TODO: add support for custom API mocks
-    setValue("type", "OpenAPI");
+    setValue("type", ApiMockTypeEnum.OPENAPI);
     if (apiMock && !error) {
       setValue("title", apiMock.title);
       setValue("description", apiMock.description);
