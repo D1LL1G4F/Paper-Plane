@@ -56,8 +56,8 @@ const EndpointCard = ({
     } else {
       form.clearErrors(`endpointMockCollection.${index}.responseObject`);
     }
-    updateEndpointsValidity();
     form.setValue(`endpointMockCollection.${index}.responseObject`, jsObject);
+    updateEndpointsValidity();
   };
 
   return (
@@ -82,10 +82,10 @@ const EndpointCard = ({
             <InputField
               {...renderField}
               onChange={(e) => {
-                updateEndpointsValidity();
-                return renderField.onChange(
+                renderField.onChange(
                   parseInt((e.target as HTMLTextAreaElement).value, 10)
                 );
+                return updateEndpointsValidity();
               }}
               type="number"
               inputMode="numeric"

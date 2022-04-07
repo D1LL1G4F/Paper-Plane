@@ -1,5 +1,5 @@
 import { Alert, CheckCircle } from "@kiwicom/orbit-components/lib/icons";
-import Popover from "@kiwicom/orbit-components/lib/Popover";
+import Tooltip from "@kiwicom/orbit-components/lib/Tooltip";
 import { EndpointMockValidityEnum } from "../utils/types";
 
 type EndpointMockValidityIconProps = {
@@ -12,13 +12,13 @@ const EndpointMockValidityIcon = ({
   const isValid = validity === EndpointMockValidityEnum.VALID;
   const isInvalid = validity === EndpointMockValidityEnum.VIOLATES_SCHEMA;
   return (
-    <Popover content={validity}>
+    <Tooltip placement="top" content={validity}>
       {isValid ? (
         <CheckCircle color="success" />
       ) : (
         <Alert color={isInvalid ? "critical" : "warning"} />
       )}
-    </Popover>
+    </Tooltip>
   );
 };
 

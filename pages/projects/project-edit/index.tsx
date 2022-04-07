@@ -8,38 +8,29 @@ import InputField from "@kiwicom/orbit-components/lib/InputField";
 import { Separator } from "@kiwicom/orbit-components";
 import Button from "@kiwicom/orbit-components/lib/Button";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import Select from "@kiwicom/orbit-components/lib/Select";
-import Illustration, {
-  Props as IllustrationProps,
-} from "@kiwicom/orbit-components/lib/Illustration";
+import Illustration from "@kiwicom/orbit-components/lib/Illustration";
 import illustrations from "../../../utils/illustations";
 
-import { ApiMock } from "../../../utils/types";
 import { useState } from "react";
 import AddNewAPIModal from "../../../components/AddNewAPIModal";
 import { Plus } from "@kiwicom/orbit-components/lib/icons";
-
-type ProjectEditForm = {
-  projectName: string;
-  projectDescription: string;
-  illustration: IllustrationProps["name"];
-  apiMockCollection: Array<ApiMock>;
-};
-
-const projectEditSchema = z.object({
-  projectName: z.string().min(1, { message: "Required" }),
-  projectDescription: z.string().min(1, { message: "Required" }),
-  illustration: z.string().min(1, { message: "Required" }),
-});
+import { ProjectEditForm } from "../../../utils/types";
+import { projectEditValidationSchema } from "../../../utils/validationSchemas";
+import ApiCard from "../../../components/ApiCard";
+import { useRouter } from "next/router";
 
 const ProjectEdit: NextPage = () => {
-  const { handleSubmit, watch, control } = useForm<ProjectEditForm>({
-    resolver: zodResolver(projectEditSchema),
+  const form = useForm<ProjectEditForm>({
+    resolver: zodResolver(projectEditValidationSchema),
   });
+  const { basePath } = useRouter();
   const [isAddNewAPIModalVisible, setIsAddNewAPIModalVisible] =
     useState<boolean>(false);
 
+  const { handleSubmit, watch, control } = form;
+
+  // TODO: update to DB
   const onSubmit = handleSubmit((data) => data);
 
   return (
@@ -113,8 +104,37 @@ const ProjectEdit: NextPage = () => {
               />
             </Stack>
             <Separator />
+            <Heading type="title2">Client</Heading>
+            <Controller
+              name="clientUrl"
+              control={control}
+              render={({ field, fieldState }) => (
+                <InputField
+                  {...field}
+                  label="Client URL"
+                  placeholder="https://paper-plane-app.com"
+                  suffix={`?${
+                    watch("apiOverrideUrlParamName") || "api"
+                  }=${basePath}`}
+                  error={fieldState.error?.message}
+                />
+              )}
+            />
+            <Controller
+              name="apiOverrideUrlParamName"
+              control={control}
+              render={({ field, fieldState }) => (
+                <InputField
+                  {...field}
+                  label="URL query parameter for mock API"
+                  placeholder="api"
+                  error={fieldState.error?.message}
+                />
+              )}
+            />
+            <Separator />
             <Stack direction="row" justify="between" align="center">
-              <Heading type="title2">APIs</Heading>
+              <Heading type="title2">Server</Heading>
               <Button
                 circled
                 type="secondary"
@@ -124,9 +144,11 @@ const ProjectEdit: NextPage = () => {
                 Add API
               </Button>
             </Stack>
-
+            {/* TODO map on data from DB*/}
+            {[].map((apiMock, index) => (
+              <ApiCard key={index} form={form} {...apiMock} />
+            ))}
             <Separator />
-
             <Stack direction="row-reverse">
               <Button size="large" submit>
                 Submit

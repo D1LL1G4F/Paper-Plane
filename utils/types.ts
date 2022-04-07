@@ -1,3 +1,5 @@
+import { Props as IllustrationProps } from "@kiwicom/orbit-components/lib/Illustration";
+
 export enum EndpointMockValidityEnum {
   VALID = "valid",
   VIOLATES_SCHEMA = "violates OpenAPI schema",
@@ -52,4 +54,13 @@ export type JSONInputContentType = {
         line: number | undefined;
         theme: string | undefined;
       };
+};
+
+export type ProjectEditForm = {
+  projectName: string;
+  projectDescription: string;
+  illustration: IllustrationProps["name"];
+  clientUrl: string;
+  apiOverrideUrlParamName: string;
+  apiMockCollection: Array<ApiMock>;
 };

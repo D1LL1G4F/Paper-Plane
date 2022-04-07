@@ -24,3 +24,12 @@ export const apiMockEditValidationSchema = z.object({
     })
   ),
 });
+
+export const projectEditValidationSchema = z.object({
+  projectName: z.string().min(1, { message: "Required" }),
+  projectDescription: z.string().min(1, { message: "Required" }),
+  illustration: z.string().min(1, { message: "Required" }),
+  clientUrl: z.string().url(),
+  apiOverrideUrlParamName: z.string().min(1, { message: "Required" }),
+  apiMockCollection: z.array(apiMockEditValidationSchema),
+});
