@@ -45,6 +45,7 @@ const AddNewAPIModal = ({ onClose }: AddNewAPIModalProps): JSX.Element => {
     register("title");
     register("description");
     register("type");
+    // eslint-disable-next-line no-warning-comments
     // TODO: add support for custom API mocks
     setValue("type", ApiMockTypeEnum.OPENAPI);
     if (apiMock && !error) {

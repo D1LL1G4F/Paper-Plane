@@ -1,59 +1,43 @@
 import type { NextPage } from "next";
 import Heading from "@kiwicom/orbit-components/lib/Heading";
 import Stack from "@kiwicom/orbit-components/lib/Stack";
-import Layout from "../../../components/Layout";
 import Box from "@kiwicom/orbit-components/lib/Box";
 import { Controller, useForm } from "react-hook-form";
 import InputField from "@kiwicom/orbit-components/lib/InputField";
 import { Separator } from "@kiwicom/orbit-components";
 import Button from "@kiwicom/orbit-components/lib/Button";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Select from "@kiwicom/orbit-components/lib/Select";
-import Illustration from "@kiwicom/orbit-components/lib/Illustration";
-import illustrations from "../../../utils/illustations";
-
-import { useState } from "react";
-import AddNewAPIModal from "../../../components/AddNewAPIModal";
-import { Plus } from "@kiwicom/orbit-components/lib/icons";
-import { ProjectEditForm } from "../../../utils/types";
-import { projectEditValidationSchema } from "../../../utils/validationSchemas";
-import ApiCard from "../../../components/ApiCard";
 import { useRouter } from "next/router";
+import { mockGroupEditValidationSchema } from "../../../../../utils/validationSchemas";
+import { MockGroupEditForm } from "../../../../../utils/types";
+import Layout from "../../../../../components/Layout";
+import ApiCard from "../../../../../components/ApiCard";
 
-const ProjectEdit: NextPage = () => {
-  const form = useForm<ProjectEditForm>({
-    resolver: zodResolver(projectEditValidationSchema),
+const MockGroupEdit: NextPage = () => {
+  const form = useForm<MockGroupEditForm>({
+    resolver: zodResolver(mockGroupEditValidationSchema),
   });
   const { basePath } = useRouter();
-  const [isAddNewAPIModalVisible, setIsAddNewAPIModalVisible] =
-    useState<boolean>(false);
 
   const { handleSubmit, watch, control } = form;
 
+  // eslint-disable-next-line no-warning-comments
   // TODO: update to DB
   const onSubmit = handleSubmit((data) => data);
 
   return (
     <>
-      {isAddNewAPIModalVisible && (
-        <AddNewAPIModal onClose={() => setIsAddNewAPIModalVisible(false)} />
-      )}
       <Layout
         sidebar={
           <Stack justify="start" direction="column" align="center">
             <Box padding="XLarge" width="100%">
               <Stack direction="column" spacing="XXLarge">
                 <Heading type="display">
-                  {watch("projectName") || "New Project"}
+                  {watch("mockGroupName") || "My new mock group"}
                 </Heading>
                 <Heading type="displaySubtitle">
-                  {watch("projectDescription") || "Project description..."}
+                  {watch("mockGroupDescription") || "description..."}
                 </Heading>
-                {watch("illustration") && (
-                  <Stack align="center" justify="center">
-                    <Illustration size="large" name={watch("illustration")} />
-                  </Stack>
-                )}
               </Stack>
             </Box>
           </Stack>
@@ -63,41 +47,25 @@ const ProjectEdit: NextPage = () => {
           <Stack spacing="XLarge">
             <Stack>
               <Controller
-                name="projectName"
+                name="mockGroupName"
                 control={control}
                 render={({ field, fieldState }) => (
                   <InputField
                     {...field}
-                    label="Project Name"
-                    placeholder="New Project"
+                    label="Mock Group Name"
+                    placeholder="My new mock group"
                     error={fieldState.error?.message}
                   />
                 )}
               />
               <Controller
-                name="projectDescription"
+                name="mockGroupDescription"
                 control={control}
                 render={({ field, fieldState }) => (
                   <InputField
                     {...field}
-                    label="Project Description"
-                    placeholder="Project description..."
-                    error={fieldState.error?.message}
-                  />
-                )}
-              />
-              <Controller
-                name="illustration"
-                control={control}
-                render={({ field, fieldState }) => (
-                  <Select
-                    {...field}
-                    label="Illustration"
-                    placeholder="None"
-                    options={illustrations.map((illustration) => ({
-                      label: illustration,
-                      value: illustration,
-                    }))}
+                    label="Mock Group Description"
+                    placeholder="description..."
                     error={fieldState.error?.message}
                   />
                 )}
@@ -139,14 +107,6 @@ const ProjectEdit: NextPage = () => {
             <Separator />
             <Stack direction="row" justify="between" align="center">
               <Heading type="title2">Server</Heading>
-              <Button
-                circled
-                type="secondary"
-                iconLeft={<Plus />}
-                onClick={() => setIsAddNewAPIModalVisible(true)}
-              >
-                Add API
-              </Button>
             </Stack>
             {/* TODO map on data from DB*/}
             {[].map((apiMock, index) => (
@@ -165,4 +125,4 @@ const ProjectEdit: NextPage = () => {
   );
 };
 
-export default ProjectEdit;
+export default MockGroupEdit;

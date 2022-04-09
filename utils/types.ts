@@ -55,6 +55,21 @@ export type JSONInputContentType = {
         theme: string | undefined;
       };
 };
+export type MockEditForm = {
+  mockName: string;
+  mockDescription: string;
+  clientUrl: string;
+  apiOverrideUrlParamName: string;
+  apiMockCollection: Array<ApiMock>;
+};
+
+export type MockGroupEditForm = {
+  mockGroupName: string;
+  mockGroupDescription: string;
+  clientUrl: string;
+  apiOverrideUrlParamName: string;
+  apiMockCollection: Array<ApiMock>;
+};
 
 export type ProjectEditForm = {
   projectName: string;

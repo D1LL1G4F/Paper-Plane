@@ -11,6 +11,7 @@ import Select from "@kiwicom/orbit-components/lib/Select";
 import { ChangeEvent, useState } from "react";
 import Illustration from "@kiwicom/orbit-components/lib/Illustration";
 import Layout from "../../../components/Layout";
+import { useRouter } from "next/router";
 
 const mockGroups: Array<MockGroup> = [
   {
@@ -38,6 +39,7 @@ const defaultWebUrlBases = ["https://kiwi.com", "https://localhost:3000"];
 
 const Mocks: NextPage = () => {
   const [webUrlBase, setWebUrlBase] = useState(defaultWebUrlBases[0]);
+  const { push, query } = useRouter();
 
   return (
     <Layout
@@ -98,6 +100,9 @@ const Mocks: NextPage = () => {
             iconLeft={<Plus />}
             title="Create new Mock"
             type="secondary"
+            onClick={() => {
+              push(`${query.projectId}/mock-group-edit`);
+            }}
           >
             New Mock Group
           </Button>

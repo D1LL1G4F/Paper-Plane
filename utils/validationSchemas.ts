@@ -33,3 +33,19 @@ export const projectEditValidationSchema = z.object({
   apiOverrideUrlParamName: z.string().min(1, { message: "Required" }),
   apiMockCollection: z.array(apiMockEditValidationSchema),
 });
+
+export const mockGroupEditValidationSchema = z.object({
+  mockGroupName: z.string().min(1, { message: "Required" }),
+  mockGroupDescription: z.string().min(1, { message: "Required" }),
+  clientUrl: z.string().url(),
+  apiOverrideUrlParamName: z.string().min(1, { message: "Required" }),
+  apiMockCollection: z.array(apiMockEditValidationSchema),
+});
+
+export const mockEditValidationSchema = z.object({
+  mockName: z.string().min(1, { message: "Required" }),
+  mockDescription: z.string().min(1, { message: "Required" }),
+  clientUrl: z.string().url(),
+  apiOverrideUrlParamName: z.string().min(1, { message: "Required" }),
+  apiMockCollection: z.array(apiMockEditValidationSchema),
+});

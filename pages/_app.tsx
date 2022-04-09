@@ -5,14 +5,13 @@ import Grid from "@kiwicom/orbit-components/lib/utils/Grid";
 import Navbar from "../components/Navbar";
 import ThemeProvider from "@kiwicom/orbit-components/lib/ThemeProvider";
 import { defaultTheme } from "@kiwicom/orbit-components";
-import firebase from "firebase/compat/app";
 import "normalize.css/normalize.css";
-import firebaseConfig from "../utils/firebaseConfig";
 import { AuthProvider } from "../components/contexts/Auth";
 import { QueryClient, QueryClientProvider } from "react-query";
 import JSONSchemaFaker from "json-schema-faker";
 import Chance from "chance";
 import { ReactQueryDevtools } from "react-query/devtools";
+import firebase from "../utils/firebase";
 
 const NavContainer = styled.header`
   z-index: 99;
@@ -23,7 +22,8 @@ const GridWrapper = styled(Grid)`
   min-height: 100vh;
 `;
 
-firebase.initializeApp(firebaseConfig);
+// eslint-disable-next-line no-unused-expressions,babel/no-unused-expressions
+firebase;
 const queryClient = new QueryClient();
 JSONSchemaFaker.extend("chance", () => new Chance(42));
 JSONSchemaFaker.option({
