@@ -34,7 +34,7 @@ const ApiCard = ({
     endpointMockCollection.forEach((endpointMock) => {
       append(endpointMock);
     });
-  });
+  }, []);
 
   const watchedEndpointMockCollection = form.watch("endpointMockCollection");
 

@@ -1,4 +1,5 @@
 import { Props as IllustrationProps } from "@kiwicom/orbit-components/lib/Illustration";
+import { CollectionReference } from "@firebase/firestore";
 
 export enum EndpointMockValidityEnum {
   VALID = "valid",
@@ -78,4 +79,12 @@ export type ProjectEditForm = {
   clientUrl: string;
   apiOverrideUrlParamName: string;
   apiMockCollection: Array<ApiMock>;
+};
+
+export type MockGroup = MockGroupEditForm & {
+  mockCollection?: CollectionReference<MockEditForm>;
+};
+
+export type Project = ProjectEditForm & {
+  mockGroupCollection?: CollectionReference<MockGroupEditForm>;
 };

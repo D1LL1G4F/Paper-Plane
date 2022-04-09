@@ -41,7 +41,7 @@ const MockGroupCard = ({ mockGroup }: MockGroupProps): ReactElement => {
         <Tile noPadding>
           <Stack justify="center">
             <Button
-              href={`${asPath}/mock-edit/`}
+              href={`${asPath}/mock-group/1234/mock-edit/`}
               fullWidth
               type="white"
               iconLeft={<Plus />}

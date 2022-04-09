@@ -45,7 +45,7 @@ const MockTile = ({ mock }: MockTileProps): ReactElement => {
           <Text>{mock.description}</Text>
         </ButtonLink>
         <Button
-          href={`${asPath}/mock-edit/${mock.id}`}
+          href={`${asPath}/mock-group/5464/mock-edit/${mock.id}`}
           type="white"
           iconLeft={<Edit />}
         />

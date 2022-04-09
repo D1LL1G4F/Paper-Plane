@@ -6,7 +6,7 @@ import Modal, {
 } from "@kiwicom/orbit-components/lib/Modal";
 import useGetMockedOpenAPI from "../utils/hooks/useGetMockedOpenAPI";
 import { ApiMock, ApiMockTypeEnum } from "../utils/types";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, UnpackNestedValue, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Stack from "@kiwicom/orbit-components/lib/Stack";
 import InputField from "@kiwicom/orbit-components/lib/InputField";
@@ -18,13 +18,17 @@ import Alert from "@kiwicom/orbit-components/lib/alert";
 import { DevTool } from "@hookform/devtools";
 import { apiMockEditValidationSchema } from "../utils/validationSchemas";
 
-type AddNewAPIModalProps = {
-  onClose: () => void;
-};
-
 type ApiMockEditForm = ApiMock;
 
-const AddNewAPIModal = ({ onClose }: AddNewAPIModalProps): JSX.Element => {
+type AddNewAPIModalProps = {
+  onClose: () => void;
+  onSubmit: (data: UnpackNestedValue<ApiMockEditForm>) => void;
+};
+
+const AddNewAPIModal = ({
+  onClose,
+  onSubmit,
+}: AddNewAPIModalProps): JSX.Element => {
   const form = useForm<ApiMockEditForm>({
     mode: "all",
     resolver: zodResolver(apiMockEditValidationSchema),
@@ -58,11 +62,11 @@ const AddNewAPIModal = ({ onClose }: AddNewAPIModalProps): JSX.Element => {
   }, [apiMock, error, setValue, register]);
 
   // eslint-disable-next-line no-console
-  const onSubmit = handleSubmit((data) => console.log(data));
+  const onSubmitForm = handleSubmit((data) => onSubmit(data));
 
   return (
     <Portal>
-      <form onSubmit={onSubmit}>
+      <form onSubmit={onSubmitForm}>
         <Modal onClose={onClose}>
           <ModalHeader title="Add new API" />
           <ModalSection>
