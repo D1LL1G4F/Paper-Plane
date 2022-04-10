@@ -90,10 +90,12 @@ const AddNewAPIModal = ({
                   type="warning"
                   title="Failed to load the OpenAPI schema"
                 >
-                  {error}
+                  {error.message}
                 </Alert>
               )}
-              {apiMock && <ApiCard form={form} {...apiMock} />}
+              {apiMock && !error && !isLoading && (
+                <ApiCard form={form} {...apiMock} />
+              )}
             </Stack>
           </ModalSection>
           <ModalFooter>

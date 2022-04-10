@@ -20,6 +20,7 @@
     "test"
   ],
   "dependencies": {
+    "@faker-js/faker": "^6.1.2",
     "@hookform/resolvers": "^2.8.8",
     "@kiwicom/orbit-components": "^2.10.0",
     "@kiwicom/orbit-design-tokens": "^1.0.6",

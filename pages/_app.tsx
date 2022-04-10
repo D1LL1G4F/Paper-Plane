@@ -12,6 +12,7 @@ import JSONSchemaFaker from "json-schema-faker";
 import Chance from "chance";
 import { ReactQueryDevtools } from "react-query/devtools";
 import firebase from "../utils/firebase";
+import Faker from "@faker-js/faker";
 
 const NavContainer = styled.header`
   z-index: 99;
@@ -26,15 +27,16 @@ const GridWrapper = styled(Grid)`
 firebase;
 const queryClient = new QueryClient();
 JSONSchemaFaker.extend("chance", () => new Chance(42));
+JSONSchemaFaker.extend("faker", () => Faker);
 JSONSchemaFaker.option({
-  minItems: 2,
+  minItems: 1,
   maxItems: 2,
   ignoreMissingRefs: true,
   failOnInvalidTypes: false,
   failOnInvalidFormat: false,
+  useExamplesValue: true,
   reuseProperties: true,
   alwaysFakeOptionals: true,
-  random: () => 0.79,
 });
 
 function MyApp({ Component, pageProps }: AppProps): ReactElement {

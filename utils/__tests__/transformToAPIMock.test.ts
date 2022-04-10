@@ -5,10 +5,12 @@ import mockOpenApiV2 from "../mockedData/mockOpenApiV2";
 import { OpenAPI } from "openapi-types";
 import JSONSchemaFaker from "json-schema-faker";
 import Chance from "chance";
+import Faker from "@faker-js/faker";
 import { EndpointMockValidityEnum } from "../types";
 
 describe("transformToAPIMock", () => {
   JSONSchemaFaker.extend("chance", () => new Chance(42));
+  JSONSchemaFaker.extend("faker", () => Faker);
   JSONSchemaFaker.option({
     minItems: 2,
     maxItems: 2,

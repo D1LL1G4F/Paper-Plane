@@ -34,15 +34,22 @@ const transformToAPIMock = (fakeSchema: OpenAPI.Document): ApiMock | null => {
             // @ts-ignore
             (endpointData as OpenAPI.Operation)?.responses?.[status]?.schema ||
             null;
-          acc.push({
-            method: method as EndpointMockMethodEnum,
-            validity: EndpointMockValidityEnum.VALID,
-            summary: (endpointData as OpenAPI.Operation)?.summary || "",
-            description: (endpointData as OpenAPI.Operation)?.description || "",
-            endpointPath: path,
-            responseStatus: status,
-            responseObject,
-          });
+
+          if (
+            Object.values(EndpointMockMethodEnum).includes(
+              method as EndpointMockMethodEnum
+            )
+          )
+            acc.push({
+              method: method as EndpointMockMethodEnum,
+              validity: EndpointMockValidityEnum.VALID,
+              summary: (endpointData as OpenAPI.Operation)?.summary || "",
+              description:
+                (endpointData as OpenAPI.Operation)?.description || "",
+              endpointPath: path,
+              responseStatus: status,
+              responseObject,
+            });
         }
       });
       return acc;
