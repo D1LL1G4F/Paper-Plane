@@ -70,7 +70,9 @@ describe("validateResponseObject", () => {
         200
       );
 
-      expect(result).toStrictEqual(EndpointMockValidityEnum.VIOLATES_SCHEMA);
+      expect(result).toStrictEqual(
+        "#/: Expected type array but found type object"
+      );
     });
   });
 });

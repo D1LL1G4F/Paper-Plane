@@ -14,7 +14,10 @@ const useGetMockedOpenAPI = (
     ["useGetMockedOpenAPI", openAPISchemaUrl],
     () => {
       const fakeSchema = generateFakeSchema(schema as Schema);
-      return transformToAPIMock(fakeSchema as OpenAPI.Document);
+      return transformToAPIMock(
+        fakeSchema as OpenAPI.Document,
+        openAPISchemaUrl
+      );
     },
     { enabled: Boolean(schema), retry: 0 }
   );

@@ -74,7 +74,8 @@ describe("transformToAPIMock", () => {
 
   it("transforms faked OpenAPI v3 schema to API mock format", () => {
     const result = transformToAPIMock(
-      generateFakeSchema(mockOpenApiV3) as OpenAPI.Document
+      generateFakeSchema(mockOpenApiV3) as OpenAPI.Document,
+      "http://petstore.swagger.io/v1/schema.json"
     );
 
     expect(result).toStrictEqual(expectedAPIMock);
@@ -82,9 +83,10 @@ describe("transformToAPIMock", () => {
 
   it("transforms faked OpenAPI v2 schema to API mock format", () => {
     const result = transformToAPIMock(
-      generateFakeSchema(mockOpenApiV2) as OpenAPI.Document
+      generateFakeSchema(mockOpenApiV2) as OpenAPI.Document,
+      "http://petstore.swagger.io/v1/schema.json"
     );
 
-    expect(result).toStrictEqual({ ...expectedAPIMock, openAPISchemaUrl: "" });
+    expect(result).toStrictEqual(expectedAPIMock);
   });
 });

@@ -20,7 +20,12 @@ export const apiMockEditValidationSchema = z.object({
       method: z.nativeEnum(EndpointMockMethodEnum),
       summary: z.string().optional(),
       description: z.string().optional(),
-      validity: z.nativeEnum(EndpointMockValidityEnum),
+      validity: z
+        .enum([
+          EndpointMockValidityEnum.VALID,
+          EndpointMockValidityEnum.WITHOUT_SCHEMA,
+        ])
+        .or(z.any()),
     })
   ),
 });

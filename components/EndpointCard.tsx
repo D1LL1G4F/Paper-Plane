@@ -2,72 +2,107 @@ import Stack from "@kiwicom/orbit-components/lib/Stack";
 import { CardSection } from "@kiwicom/orbit-components/lib/Card";
 import Text from "@kiwicom/orbit-components/lib/Text";
 import JSONInput from "react-json-editor-ajrm";
-import { ApiMock, JSONInputContentType } from "../utils/types";
+import {
+  ApiMock,
+  JSONInputContentType,
+  MockEditForm,
+  MockGroupEditForm,
+  ProjectEditForm,
+} from "../utils/types";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - https://github.com/AndrewRedican/react-json-editor-ajrm/issues/163
 import locale from "react-json-editor-ajrm/locale/en";
-import { Controller, FieldArrayWithId, UseFormReturn } from "react-hook-form";
+import {
+  Control,
+  Controller,
+  FieldArrayWithId,
+  useController,
+  useWatch,
+} from "react-hook-form";
 import InputField from "@kiwicom/orbit-components/lib/InputField";
 import validateResponseObject from "../utils/validateResponseObject";
 import EndpointMockValidityIcon from "./EndpointMockValidityIcon";
 import { Schema } from "json-schema-faker";
+import { useEffect, useState } from "react";
 
 type EndpointCardProps = {
-  field: FieldArrayWithId<ApiMock, "endpointMockCollection", "id">;
+  field: FieldArrayWithId<ApiMock, "endpointMockCollection">;
   index: number;
-  form: UseFormReturn<ApiMock, unknown>;
   openAPISchema: Schema | null | undefined;
-};
+} & (
+  | {
+      control: Control<ApiMock, unknown>;
+      fieldArrayName: "endpointMockCollection";
+    }
+  | {
+      control:
+        | Control<ProjectEditForm, unknown>
+        | Control<MockGroupEditForm, unknown>
+        | Control<MockEditForm, unknown>;
+      fieldArrayName: `apiMockCollection.${number}.endpointMockCollection`;
+    }
+);
 
 const EndpointCard = ({
   field,
   openAPISchema,
   index,
-  form,
+  control,
+  fieldArrayName,
 }: EndpointCardProps): JSX.Element => {
-  const updateEndpointsValidity = () => {
-    const path = form.getValues(`endpointMockCollection.${index}.endpointPath`);
-    const method = form.getValues(`endpointMockCollection.${index}.method`);
-    const responseObject = form.getValues(
-      `endpointMockCollection.${index}.responseObject`
-    );
-    const responseStatus = form.getValues(
-      `endpointMockCollection.${index}.responseStatus`
-    );
+  const [JSONInputError, setJSONInputError] =
+    useState<JSONInputContentType["error"]>(false);
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const [responseObject, endpointPath, method, responseStatus] = useWatch({
+    control: control as Control<ApiMock, unknown>,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    name: [
+      `${fieldArrayName}.${index}.responseObject`,
+      `${fieldArrayName}.${index}.endpointPath`,
+      `${fieldArrayName}.${index}.method`,
+      `${fieldArrayName}.${index}.responseStatus`,
+    ],
+  });
 
-    form.setValue(
-      `endpointMockCollection.${index}.validity`,
+  const {
+    field: { onChange: setValidity },
+  } = useController({
+    name: `${fieldArrayName}.${index}.validity` as unknown as "endpointMockCollection",
+    control: control as Control<ApiMock, unknown>,
+  });
+
+  const validity = useWatch({
+    control: control as Control<ApiMock, unknown>,
+    name: `${fieldArrayName}.${index}.validity` as unknown as "endpointMockCollection",
+  });
+
+  useEffect(() => {
+    setValidity(() =>
       validateResponseObject(
         openAPISchema,
         responseObject,
-        path,
+        endpointPath,
         method,
         responseStatus
       )
     );
-  };
-
-  const onJSONInputChange = ({ error, jsObject }: JSONInputContentType) => {
-    if (error) {
-      form.setError(`endpointMockCollection.${index}.responseObject`, {
-        type: "custom",
-        message: error.reason,
-      });
-    } else {
-      form.clearErrors(`endpointMockCollection.${index}.responseObject`);
-    }
-    form.setValue(`endpointMockCollection.${index}.responseObject`, jsObject);
-    updateEndpointsValidity();
-  };
+  }, [
+    setValidity,
+    openAPISchema,
+    responseObject,
+    endpointPath,
+    method,
+    responseStatus,
+  ]);
 
   return (
     <CardSection
       expandable
       title={
         <Stack direction="row">
-          <EndpointMockValidityIcon
-            validity={form.watch(`endpointMockCollection.${index}.validity`)}
-          />
+          <EndpointMockValidityIcon validity={validity as unknown as string} />
           <Text weight="bold">{field.method.toUpperCase()}</Text>
           <Text>{field.endpointPath}</Text>
         </Stack>
@@ -76,8 +111,11 @@ const EndpointCard = ({
     >
       <Stack>
         <Controller
-          name={`endpointMockCollection.${index}.responseStatus`}
-          control={form.control}
+          name={
+            `${fieldArrayName}.${index}.responseStatus` as `endpointMockCollection.${number}.responseStatus`
+          }
+          control={control as Control<ApiMock, unknown>}
+          defaultValue={field.responseStatus}
           render={({ field: renderField, fieldState }) => (
             <InputField
               {...renderField}
@@ -85,23 +123,29 @@ const EndpointCard = ({
                 renderField.onChange(
                   parseInt((e.target as HTMLTextAreaElement).value, 10)
                 );
-                return updateEndpointsValidity();
               }}
               type="number"
               inputMode="numeric"
               label="Response Status Code"
-              placeholder="200"
+              placeholder={field.responseStatus?.toString() || "200"}
               error={fieldState.error?.message}
             />
           )}
         />
         <Controller
-          name={`endpointMockCollection.${index}.responseObject`}
-          control={form.control}
+          name={
+            `${fieldArrayName}.${index}.responseObject` as `endpointMockCollection.${number}.responseObject`
+          }
+          control={control as Control<ApiMock, unknown>}
+          rules={{ validate: () => !JSONInputError }}
+          defaultValue={field.responseObject}
           render={({ field: renderField }) => (
             <JSONInput
               {...renderField}
-              onChange={onJSONInputChange}
+              onChange={({ error, jsObject }: JSONInputContentType) => {
+                setJSONInputError(error);
+                renderField.onChange(jsObject);
+              }}
               placeholder={renderField.value}
               locale={locale}
               height="550px"

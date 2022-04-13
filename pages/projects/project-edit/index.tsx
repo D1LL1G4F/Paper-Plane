@@ -3,7 +3,7 @@ import Heading from "@kiwicom/orbit-components/lib/Heading";
 import Stack from "@kiwicom/orbit-components/lib/Stack";
 import Layout from "../../../components/Layout";
 import Box from "@kiwicom/orbit-components/lib/Box";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import InputField from "@kiwicom/orbit-components/lib/InputField";
 import { Separator } from "@kiwicom/orbit-components";
 import Button from "@kiwicom/orbit-components/lib/Button";
@@ -12,7 +12,7 @@ import Select from "@kiwicom/orbit-components/lib/Select";
 import Illustration from "@kiwicom/orbit-components/lib/Illustration";
 import illustrations from "../../../utils/illustations";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import AddNewAPIModal from "../../../components/AddNewAPIModal";
 import { Plus } from "@kiwicom/orbit-components/lib/icons";
 import { Project, ProjectEditForm } from "../../../utils/types";
@@ -28,7 +28,11 @@ import {
 
 const ProjectEdit: NextPage = () => {
   const form = useForm<ProjectEditForm>({
+    mode: "all",
     resolver: zodResolver(projectEditValidationSchema),
+    defaultValues: {
+      apiMockCollection: [],
+    },
   });
   const { basePath, query, push } = useRouter();
   const [isAddNewAPIModalVisible, setIsAddNewAPIModalVisible] =
@@ -58,20 +62,16 @@ const ProjectEdit: NextPage = () => {
     push("/projects");
   });
 
-  useEffect(() => {
-    setValue("apiMockCollection", []);
-  }, []);
+  const apiMockCollection = useWatch({ name: "apiMockCollection", control });
 
   return (
     <>
       {isAddNewAPIModalVisible && (
         <AddNewAPIModal
-          onSubmit={(data) =>
-            setValue(
-              "apiMockCollection",
-              watch("apiMockCollection").concat(data)
-            )
-          }
+          onSubmit={(data) => {
+            setValue("apiMockCollection", apiMockCollection.concat(data));
+            setIsAddNewAPIModalVisible(false);
+          }}
           onClose={() => setIsAddNewAPIModalVisible(false)}
         />
       )}
@@ -185,9 +185,13 @@ const ProjectEdit: NextPage = () => {
                 Add API
               </Button>
             </Stack>
-            {/* TODO map on data from DB*/}
-            {[].map((apiMock, index) => (
-              <ApiCard key={index} form={form} {...apiMock} />
+            {apiMockCollection.map((apiMock, index) => (
+              <ApiCard
+                fieldArrayName={`apiMockCollection.${index}.endpointMockCollection`}
+                key={index}
+                control={control}
+                {...apiMock}
+              />
             ))}
             <Separator />
             <Stack direction="row-reverse">

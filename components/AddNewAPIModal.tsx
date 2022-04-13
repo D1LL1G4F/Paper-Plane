@@ -15,7 +15,6 @@ import { Separator } from "@kiwicom/orbit-components";
 import ApiCard from "./ApiCard";
 import { useEffect } from "react";
 import Alert from "@kiwicom/orbit-components/lib/alert";
-import { DevTool } from "@hookform/devtools";
 import { apiMockEditValidationSchema } from "../utils/validationSchemas";
 
 type ApiMockEditForm = ApiMock;
@@ -35,7 +34,6 @@ const AddNewAPIModal = ({
   });
   const { handleSubmit, control, watch, setValue, register, getFieldState } =
     form;
-  register("openAPISchemaUrl");
   const isValidOpenAPISchemaUrl =
     getFieldState("openAPISchemaUrl").isDirty &&
     !getFieldState("openAPISchemaUrl").invalid;
@@ -94,7 +92,11 @@ const AddNewAPIModal = ({
                 </Alert>
               )}
               {apiMock && !error && !isLoading && (
-                <ApiCard form={form} {...apiMock} />
+                <ApiCard
+                  control={control}
+                  {...apiMock}
+                  fieldArrayName="endpointMockCollection"
+                />
               )}
             </Stack>
           </ModalSection>
@@ -104,7 +106,6 @@ const AddNewAPIModal = ({
             </Button>
           </ModalFooter>
         </Modal>
-        <DevTool control={control} />
       </form>
     </Portal>
   );

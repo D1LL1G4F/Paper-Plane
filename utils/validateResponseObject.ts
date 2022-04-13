@@ -7,7 +7,7 @@ const validateResponseObject = (
   path: string,
   method: string,
   statusCode: number
-): EndpointMockValidityEnum => {
+): EndpointMockValidityEnum | string => {
   if (!openAPISchema) {
     return EndpointMockValidityEnum.WITHOUT_SCHEMA;
   }
@@ -16,18 +16,19 @@ const validateResponseObject = (
   const schemaPath = openAPISchema?.openapi
     ? `paths.["${path}"].${method}.responses.["${statusCode}"].content.["application/json"].schema`
     : `paths.["${path}"].${method}.responses.["${statusCode}"].schema`;
-  ZSchema.registerFormat("int64", (val: unknown) => Number.isInteger(val));
-  ZSchema.registerFormat("int32", (val: unknown) => Number.isInteger(val));
-  const validator = new ZSchema({});
+  const validator = new ZSchema({ ignoreUnknownFormats: true });
   try {
     const isValid = validator.validate(responseObject, openAPISchema, {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore - z-schema is missing one function overload type which supports options object with schemaPath
       schemaPath,
     });
+
     return isValid
       ? EndpointMockValidityEnum.VALID
-      : EndpointMockValidityEnum.VIOLATES_SCHEMA;
+      : `${validator.getLastError().details[0].path}: ${
+          validator.getLastError().details[0].message
+        }`;
   } catch (e) {
     return EndpointMockValidityEnum.WITHOUT_SCHEMA;
   }

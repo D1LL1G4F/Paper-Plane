@@ -6,9 +6,12 @@ import {
   EndpointMockValidityEnum,
 } from "./types";
 import _ from "lodash";
-import { OpenAPI, OpenAPIV3 } from "openapi-types";
+import { OpenAPI } from "openapi-types";
 
-const transformToAPIMock = (fakeSchema: OpenAPI.Document): ApiMock | null => {
+const transformToAPIMock = (
+  fakeSchema: OpenAPI.Document,
+  openAPISchemaUrl: string
+): ApiMock | null => {
   if (!fakeSchema) return null;
 
   const endpointMockCollection = _.reduce(
@@ -61,10 +64,7 @@ const transformToAPIMock = (fakeSchema: OpenAPI.Document): ApiMock | null => {
     type: ApiMockTypeEnum.OPENAPI,
     title: fakeSchema.info.title,
     description: fakeSchema.info.description || "",
-    openAPISchemaUrl:
-      (fakeSchema as OpenAPIV3.Document).servers?.[0]?.url?.concat(
-        "/schema.json"
-      ) || "",
+    openAPISchemaUrl,
     endpointMockCollection,
   };
 };

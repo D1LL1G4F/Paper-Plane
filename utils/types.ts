@@ -26,7 +26,7 @@ export type EndpointMock = {
   method: EndpointMockMethodEnum;
   summary?: string;
   description?: string;
-  validity: EndpointMockValidityEnum;
+  validity: EndpointMockValidityEnum | string;
 };
 
 export enum ApiMockTypeEnum {
