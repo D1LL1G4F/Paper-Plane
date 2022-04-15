@@ -1,6 +1,15 @@
 import { ApiMock } from "./types";
 import _ from "lodash";
 
+/**
+ * Filters out unchanged api and endpoints mocks
+ *
+ * @example ```typescript
+ * filterChangedApiMocks(originalApiMockCollection, changedApiMockCollection)
+ * ```
+ *
+ * @returns differentiating api mocks and api endpoints
+ */
 const filterChangedApiMocks = (
   originalApiMockCollection: Array<ApiMock>,
   changedApiMockCollection: Array<ApiMock>
