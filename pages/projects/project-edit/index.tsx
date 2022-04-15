@@ -15,16 +15,11 @@ import illustrations from "../../../utils/illustations";
 import { useState } from "react";
 import AddNewAPIModal from "../../../components/AddNewAPIModal";
 import { Plus } from "@kiwicom/orbit-components/lib/icons";
-import { Project, ProjectEditForm } from "../../../utils/types";
+import { ProjectEditForm } from "../../../utils/types";
 import { projectEditValidationSchema } from "../../../utils/validationSchemas";
 import ApiCard from "../../../components/ApiCard";
 import { useRouter } from "next/router";
-import useFirestore from "../../../utils/hooks/useFirestore";
-import { collection, CollectionReference, doc } from "@firebase/firestore";
-import {
-  useFirestoreCollectionMutation,
-  useFirestoreDocumentMutation,
-} from "@react-query-firebase/firestore";
+import useProjectMutation from "../../../utils/hooks/useProjectMutation";
 
 const ProjectEdit: NextPage = () => {
   const form = useForm<ProjectEditForm>({
@@ -37,28 +32,13 @@ const ProjectEdit: NextPage = () => {
   const { basePath, query, push } = useRouter();
   const [isAddNewAPIModalVisible, setIsAddNewAPIModalVisible] =
     useState<boolean>(false);
-  const firestore = useFirestore();
-  const ref = collection(firestore, "projects");
-  const documentMutation = useFirestoreDocumentMutation<Project>(
-    doc<Project>(
-      ref as CollectionReference<Project>,
-      (query.projectId as string) || "0"
-    ),
-    {
-      merge: true,
-    }
-  );
-  const collectionMutation = useFirestoreCollectionMutation<Project>(
-    ref as CollectionReference<Project>
-  );
-  const mutation = query.projectId ? documentMutation : collectionMutation;
 
   const { handleSubmit, watch, control, setValue } = form;
 
+  const { mutate } = useProjectMutation(query.projectId as string | undefined);
+
   const onSubmit = handleSubmit((data) => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    mutation.mutate(data);
+    mutate(data);
     push("/projects");
   });
 

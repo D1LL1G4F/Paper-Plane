@@ -79,7 +79,7 @@ const EndpointCard = ({
   });
 
   useEffect(() => {
-    setValidity(() =>
+    setValidity(
       validateResponseObject(
         openAPISchema,
         responseObject,
