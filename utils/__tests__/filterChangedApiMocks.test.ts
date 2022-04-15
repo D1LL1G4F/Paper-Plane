@@ -73,4 +73,26 @@ describe("filterChangedApiMocks", () => {
       },
     ]);
   });
+  it("ignores changes of endpoint validity", () => {
+    const alteredEndpointMock = {
+      endpointPath: "/endpoint",
+      responseStatus: 200,
+      responseObject: { baz: 1, foo: 3 },
+      method: EndpointMockMethodEnum.GET,
+      validity: EndpointMockValidityEnum.WITHOUT_SCHEMA,
+    };
+    const alteredApiMocks = [
+      {
+        ...mergedApiMocks[0],
+        endpointMockCollection: [
+          alteredEndpointMock,
+          mergedApiMocks[0].endpointMockCollection[1],
+        ],
+      },
+      mergedApiMocks[1],
+    ];
+    expect(
+      filterChangedApiMocks(mergedApiMocks, alteredApiMocks)
+    ).toStrictEqual([]);
+  });
 });

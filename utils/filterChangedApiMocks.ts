@@ -15,7 +15,7 @@ const filterChangedApiMocks = (
       const changedEndpointMockCollection = _.differenceWith(
         changedApiMock.endpointMockCollection,
         (originalApiMock as ApiMock).endpointMockCollection,
-        _.isEqual
+        (a, b) => _.isEqual(_.omit(a, ["validity"]), _.omit(b, ["validity"]))
       );
 
       return {
