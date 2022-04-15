@@ -16,8 +16,7 @@ const useGetProjectDocument = (
   const ref = doc(firestore, "projects", projectId || "0");
   const project = useFirestoreDocument<Project, DocumentSnapshot<Project>>(
     ["projects", projectId],
-    ref as DocumentReference<Project>,
-    { subscribe: true }
+    ref as DocumentReference<Project>
   );
 
   if (!projectId) {

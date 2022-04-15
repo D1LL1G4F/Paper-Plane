@@ -10,37 +10,6 @@ import Button from "@kiwicom/orbit-components/lib/Button";
 import { useRouter } from "next/router";
 import useGetProjectCollection from "../../utils/hooks/useGetProjectCollection";
 
-// export const projects: Array<Project> = [
-//   {
-//     title: "Manage My Booking",
-//     id: "123",
-//     description: "Refunds, Ancillaries, Check-in, Schedule Changes...",
-//     illustration: "Lounge",
-//     openApiSpecs: [],
-//   },
-//   {
-//     title: "Payments",
-//     id: "3213213",
-//     description: "Universal payment service",
-//     illustration: "Money",
-//     openApiSpecs: [],
-//   },
-//   {
-//     title: "Search",
-//     id: "2132",
-//     description: "Search for air and ground transport.",
-//     illustration: "DesktopSearch",
-//     openApiSpecs: [],
-//   },
-//   {
-//     title: "Booking",
-//     id: "132131223",
-//     description: "Trip booking flow.",
-//     illustration: "OnlineCheckIn",
-//     openApiSpecs: [],
-//   },
-// ];
-
 const Projects: NextPage = () => {
   const { push } = useRouter();
   const { data: projectCollectionSnapshot } = useGetProjectCollection();

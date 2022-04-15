@@ -22,8 +22,7 @@ const useProjectMutation = (
 ): UseMutationResult<
   void | DocumentReference<Project>,
   FirestoreError,
-  WithFieldValue<Project>,
-  unknown
+  WithFieldValue<Project>
 > => {
   const firestore = useFirestore();
   const ref = collection(firestore, "projects");

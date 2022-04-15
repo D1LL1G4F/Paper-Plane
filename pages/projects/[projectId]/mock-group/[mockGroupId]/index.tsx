@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import Heading from "@kiwicom/orbit-components/lib/Heading";
 import Stack from "@kiwicom/orbit-components/lib/Stack";
 import Box from "@kiwicom/orbit-components/lib/Box";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import InputField from "@kiwicom/orbit-components/lib/InputField";
 import { Separator } from "@kiwicom/orbit-components";
 import Button from "@kiwicom/orbit-components/lib/Button";
@@ -12,18 +12,48 @@ import { mockGroupEditValidationSchema } from "../../../../../utils/validationSc
 import { MockGroupEditForm } from "../../../../../utils/types";
 import Layout from "../../../../../components/Layout";
 import ApiCard from "../../../../../components/ApiCard";
+import useMockGroupMutation from "../../../../../utils/hooks/useMockGroupMutation";
+import useGetMockGroupDocument from "../../../../../utils/hooks/useGetMockGroupDocument";
+import { useEffect } from "react";
 
 const MockGroupEdit: NextPage = () => {
   const form = useForm<MockGroupEditForm>({
+    mode: "all",
     resolver: zodResolver(mockGroupEditValidationSchema),
+    defaultValues: {
+      apiMockCollection: [],
+    },
   });
-  const { basePath } = useRouter();
+  const {
+    basePath,
+    query: { projectId, mockGroupId },
+    push,
+  } = useRouter();
 
-  const { handleSubmit, watch, control } = form;
+  const { handleSubmit, watch, control, reset } = form;
 
-  // eslint-disable-next-line no-warning-comments
-  // TODO: update to DB
-  const onSubmit = handleSubmit((data) => data);
+  const mockGroupDocument = useGetMockGroupDocument(
+    projectId as string,
+    mockGroupId as string | undefined
+  );
+  const { mutate } = useMockGroupMutation(
+    projectId as string,
+    mockGroupId as string | undefined
+  );
+
+  const onSubmit = handleSubmit((data) => {
+    mutate(data);
+    push(`/projects/${projectId}`);
+  });
+
+  const apiMockCollection = useWatch({ name: "apiMockCollection", control });
+
+  useEffect(() => {
+    if (projectId && !mockGroupDocument?.isLoading) {
+      const project = mockGroupDocument?.data?.data();
+      reset(project);
+    }
+  }, [projectId, mockGroupDocument?.isLoading]);
 
   return (
     <>
@@ -108,9 +138,13 @@ const MockGroupEdit: NextPage = () => {
             <Stack direction="row" justify="between" align="center">
               <Heading type="title2">Server</Heading>
             </Stack>
-            {/* TODO map on data from DB*/}
-            {[].map((apiMock, index) => (
-              <ApiCard key={index} form={form} {...apiMock} />
+            {apiMockCollection.map((apiMock, index) => (
+              <ApiCard
+                fieldArrayName={`apiMockCollection.${index}.endpointMockCollection`}
+                key={index}
+                control={control}
+                {...apiMock}
+              />
             ))}
             <Separator />
             <Stack direction="row-reverse">
