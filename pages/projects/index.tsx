@@ -3,58 +3,47 @@ import Heading from "@kiwicom/orbit-components/lib/Heading";
 import Stack from "@kiwicom/orbit-components/lib/Stack";
 import Layout, { LayoutColumn } from "@kiwicom/orbit-components/lib/Layout";
 import Box from "@kiwicom/orbit-components/lib/Box";
-import { Props as IllustrationProps } from "@kiwicom/orbit-components/lib/Illustration";
 
 import ProjectCard from "../../components/ProjectCard";
 import { Plus } from "@kiwicom/orbit-components/icons";
 import Button from "@kiwicom/orbit-components/lib/Button";
 import { useRouter } from "next/router";
+import useGetProjectCollection from "../../utils/hooks/useGetProjectCollection";
 
-export type Project = {
-  title: string;
-  id: string;
-  description: string;
-  illustration: IllustrationProps["name"];
-  openApiSpecs: Array<string>;
-  webUrlBase?: {
-    primary: string;
-    secondary?: Array<string>;
-  };
-};
-
-export const projects: Array<Project> = [
-  {
-    title: "Manage My Booking",
-    id: "123",
-    description: "Refunds, Ancillaries, Check-in, Schedule Changes...",
-    illustration: "Lounge",
-    openApiSpecs: [],
-  },
-  {
-    title: "Payments",
-    id: "3213213",
-    description: "Universal payment service",
-    illustration: "Money",
-    openApiSpecs: [],
-  },
-  {
-    title: "Search",
-    id: "2132",
-    description: "Search for air and ground transport.",
-    illustration: "DesktopSearch",
-    openApiSpecs: [],
-  },
-  {
-    title: "Booking",
-    id: "132131223",
-    description: "Trip booking flow.",
-    illustration: "OnlineCheckIn",
-    openApiSpecs: [],
-  },
-];
+// export const projects: Array<Project> = [
+//   {
+//     title: "Manage My Booking",
+//     id: "123",
+//     description: "Refunds, Ancillaries, Check-in, Schedule Changes...",
+//     illustration: "Lounge",
+//     openApiSpecs: [],
+//   },
+//   {
+//     title: "Payments",
+//     id: "3213213",
+//     description: "Universal payment service",
+//     illustration: "Money",
+//     openApiSpecs: [],
+//   },
+//   {
+//     title: "Search",
+//     id: "2132",
+//     description: "Search for air and ground transport.",
+//     illustration: "DesktopSearch",
+//     openApiSpecs: [],
+//   },
+//   {
+//     title: "Booking",
+//     id: "132131223",
+//     description: "Trip booking flow.",
+//     illustration: "OnlineCheckIn",
+//     openApiSpecs: [],
+//   },
+// ];
 
 const Projects: NextPage = () => {
   const { push } = useRouter();
+  const { data: projectCollectionSnapshot } = useGetProjectCollection();
   return (
     <Layout type="MMB">
       <LayoutColumn>
@@ -80,8 +69,12 @@ const Projects: NextPage = () => {
           justify="start"
           spacing="large"
         >
-          {projects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
+          {projectCollectionSnapshot?.docs.map((projectSnapshot) => (
+            <ProjectCard
+              key={projectSnapshot.id}
+              projectId={projectSnapshot.id}
+              project={projectSnapshot.data()}
+            />
           ))}
         </Stack>
       </LayoutColumn>

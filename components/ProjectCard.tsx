@@ -8,27 +8,31 @@ import Text from "@kiwicom/orbit-components/lib/Text";
 import Settings from "@kiwicom/orbit-components/lib/icons/Settings";
 import { useRouter } from "next/router";
 import { ReactElement } from "react";
-import { Project } from "../pages/projects";
+import { Project } from "../utils/types";
 
 type ProjectCardProps = {
   project: Project;
+  projectId: string;
 };
 
-const ProjectCard = ({ project }: ProjectCardProps): ReactElement => {
+const ProjectCard = ({
+  project: { illustration, projectName, projectDescription },
+  projectId,
+}: ProjectCardProps): ReactElement => {
   const { push } = useRouter();
 
   return (
     <CallOutBanner
       title=""
-      illustration={<Illustration name={project.illustration} />}
+      illustration={<Illustration name={illustration} />}
       onClick={async () => {
-        await push(`projects/${project.id}`);
+        await push(`projects/${projectId}`);
       }}
     >
       <Stack>
         <Stack direction="row" wrap justify="between">
           <Box width="25vw">
-            <Heading type="title2">{project.title}</Heading>
+            <Heading type="title2">{projectName}</Heading>
           </Box>
           <Button
             circled
@@ -37,12 +41,12 @@ const ProjectCard = ({ project }: ProjectCardProps): ReactElement => {
             type="white"
             onClick={async (e) => {
               e.stopPropagation();
-              await push(`projects/project-edit/${project.id}`);
+              await push(`projects/project-edit/${projectId}`);
             }}
           />
         </Stack>
         <Box width="30vw">
-          <Text>{project.description}</Text>
+          <Text>{projectDescription}</Text>
         </Box>
       </Stack>
     </CallOutBanner>

@@ -11,8 +11,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Select from "@kiwicom/orbit-components/lib/Select";
 import Illustration from "@kiwicom/orbit-components/lib/Illustration";
 import illustrations from "../../../utils/illustations";
+import { DevTool } from "@hookform/devtools";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddNewAPIModal from "../../../components/AddNewAPIModal";
 import { Plus } from "@kiwicom/orbit-components/lib/icons";
 import { ProjectEditForm } from "../../../utils/types";
@@ -20,8 +21,16 @@ import { projectEditValidationSchema } from "../../../utils/validationSchemas";
 import ApiCard from "../../../components/ApiCard";
 import { useRouter } from "next/router";
 import useProjectMutation from "../../../utils/hooks/useProjectMutation";
+import useGetProjectDocument from "../../../utils/hooks/useGetProjectDocument";
 
 const ProjectEdit: NextPage = () => {
+  const [isAddNewAPIModalVisible, setIsAddNewAPIModalVisible] =
+    useState<boolean>(false);
+  const {
+    basePath,
+    query: { projectId },
+    push,
+  } = useRouter();
   const form = useForm<ProjectEditForm>({
     mode: "all",
     resolver: zodResolver(projectEditValidationSchema),
@@ -29,13 +38,13 @@ const ProjectEdit: NextPage = () => {
       apiMockCollection: [],
     },
   });
-  const { basePath, query, push } = useRouter();
-  const [isAddNewAPIModalVisible, setIsAddNewAPIModalVisible] =
-    useState<boolean>(false);
 
-  const { handleSubmit, watch, control, setValue } = form;
+  const { handleSubmit, watch, control, setValue, reset } = form;
 
-  const { mutate } = useProjectMutation(query.projectId as string | undefined);
+  const projectDocument = useGetProjectDocument(
+    projectId as string | undefined
+  );
+  const { mutate } = useProjectMutation(projectId as string | undefined);
 
   const onSubmit = handleSubmit((data) => {
     mutate(data);
@@ -43,6 +52,13 @@ const ProjectEdit: NextPage = () => {
   });
 
   const apiMockCollection = useWatch({ name: "apiMockCollection", control });
+
+  useEffect(() => {
+    if (projectId && !projectDocument?.isLoading) {
+      const project = projectDocument?.data?.data();
+      reset(project);
+    }
+  }, [projectId, projectDocument?.isLoading]);
 
   return (
     <>
@@ -56,6 +72,7 @@ const ProjectEdit: NextPage = () => {
         />
       )}
       <Layout
+        isLoading={projectDocument?.isLoading}
         sidebar={
           <Stack justify="start" direction="column" align="center">
             <Box padding="XLarge" width="100%">
@@ -77,6 +94,7 @@ const ProjectEdit: NextPage = () => {
         }
       >
         <form onSubmit={onSubmit}>
+          <DevTool control={control} />
           <Stack spacing="XLarge">
             <Stack>
               <Controller
