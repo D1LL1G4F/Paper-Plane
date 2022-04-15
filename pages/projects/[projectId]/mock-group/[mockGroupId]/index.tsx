@@ -15,6 +15,9 @@ import ApiCard from "../../../../../components/ApiCard";
 import useMockGroupMutation from "../../../../../utils/hooks/useMockGroupMutation";
 import useGetMockGroupDocument from "../../../../../utils/hooks/useGetMockGroupDocument";
 import { useEffect } from "react";
+import useGetProjectDocument from "../../../../../utils/hooks/useGetProjectDocument";
+import mergeApiMocks from "../../../../../utils/mergeApiMocks";
+import filterChangedApiMocks from "../../../../../utils/filterChangedApiMocks";
 
 const MockGroupEdit: NextPage = () => {
   const form = useForm<MockGroupEditForm>({
@@ -36,28 +39,56 @@ const MockGroupEdit: NextPage = () => {
     projectId as string,
     mockGroupId as string | undefined
   );
+  const projectDocument = useGetProjectDocument(projectId as string);
   const { mutate } = useMockGroupMutation(
     projectId as string,
     mockGroupId as string | undefined
   );
 
   const onSubmit = handleSubmit((data) => {
-    mutate(data);
-    push(`/projects/${projectId}`);
+    const project = projectDocument?.data?.data();
+    const mockGroup = mockGroupDocument?.data?.data();
+    if (project) {
+      const mergedApiMocks = mergeApiMocks(
+        project.apiMockCollection,
+        mockGroup?.apiMockCollection
+      );
+      const changedApiMocks = filterChangedApiMocks(
+        mergedApiMocks,
+        data.apiMockCollection
+      );
+      mutate({ ...data, apiMockCollection: changedApiMocks });
+      push(`/projects/${projectId}`);
+    }
   });
 
   const apiMockCollection = useWatch({ name: "apiMockCollection", control });
 
   useEffect(() => {
-    if (projectId && !mockGroupDocument?.isLoading) {
-      const project = mockGroupDocument?.data?.data();
-      reset(project);
+    const project = projectDocument?.data?.data();
+    const mockGroup = mockGroupDocument?.data?.data();
+    if (
+      projectId &&
+      project &&
+      !mockGroupDocument?.isLoading &&
+      !projectDocument?.isLoading
+    ) {
+      reset({
+        ...mockGroup,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore - some form typing weirdness
+        apiMockCollection: mergeApiMocks(
+          project.apiMockCollection,
+          mockGroup?.apiMockCollection
+        ),
+      });
     }
-  }, [projectId, mockGroupDocument?.isLoading]);
+  }, [projectId, mockGroupDocument?.isLoading, projectDocument?.isLoading]);
 
   return (
     <>
       <Layout
+        isLoading={mockGroupDocument?.isLoading || projectDocument?.isLoading}
         sidebar={
           <Stack justify="start" direction="column" align="center">
             <Box padding="XLarge" width="100%">

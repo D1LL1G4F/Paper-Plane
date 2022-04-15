@@ -14,7 +14,7 @@ const mergeApiMocks = (
   projectApiMockCollection: Array<ApiMock>,
   mockGroupApiMockCollection?: Array<ApiMock>,
   mockApiMockCollection?: Array<ApiMock>
-): ApiMock[] => {
+): Array<ApiMock> => {
   return projectApiMockCollection.map((projectApiMock): ApiMock => {
     const mockGroupApiMock = mockGroupApiMockCollection?.find(
       (apiMock) => apiMock.openAPISchemaUrl === projectApiMock.openAPISchemaUrl

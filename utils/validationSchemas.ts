@@ -14,9 +14,7 @@ export const apiMockEditValidationSchema = z.object({
     z.object({
       endpointPath: z.string().regex(/^\/.*/),
       responseStatus: z.number().min(100).max(599),
-      responseObject: z.nullable(
-        z.object({}).passthrough().or(z.array(z.any()))
-      ),
+      responseObject: z.nullable(z.unknown()),
       method: z.nativeEnum(EndpointMockMethodEnum),
       summary: z.string().optional(),
       description: z.string().optional(),
