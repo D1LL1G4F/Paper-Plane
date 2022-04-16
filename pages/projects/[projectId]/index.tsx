@@ -4,7 +4,7 @@ import Stack from "@kiwicom/orbit-components/lib/Stack";
 import Button from "@kiwicom/orbit-components/lib/Button";
 import { Plus } from "@kiwicom/orbit-components/lib/icons";
 import Box from "@kiwicom/orbit-components/lib/Box";
-import MockGroupCard, { MockGroup } from "../../../components/MockGroupCard";
+import MockGroupCard from "../../../components/MockGroupCard";
 import InputGroup from "@kiwicom/orbit-components/lib/InputGroup";
 import InputField from "@kiwicom/orbit-components/lib/InputField";
 import Select from "@kiwicom/orbit-components/lib/Select";
@@ -12,44 +12,34 @@ import { ChangeEvent, useState } from "react";
 import Illustration from "@kiwicom/orbit-components/lib/Illustration";
 import Layout from "../../../components/Layout";
 import { useRouter } from "next/router";
-
-const mockGroups: Array<MockGroup> = [
-  {
-    title: "Invoices",
-    description: "MMB invoices page",
-    id: "1213",
-    mocks: [
-      {
-        title: "Single Invoice",
-        description: "1 Slovak passenger",
-        id: "123",
-        status: "active",
-      },
-      {
-        title: "Multiple Invoices",
-        description: "3 Russian passenger",
-        id: "123321",
-        status: "outdated",
-      },
-    ],
-  },
-];
+import useGetProjectDocument from "../../../utils/hooks/useGetProjectDocument";
+import useGetMockGroupCollection from "../../../utils/hooks/useGetMockGroupCollection";
 
 const defaultWebUrlBases = ["https://kiwi.com", "https://localhost:3000"];
 
 const Mocks: NextPage = () => {
+  const {
+    push,
+    query: { projectId },
+  } = useRouter();
+  const projectDocument = useGetProjectDocument(projectId as string);
+  const projectData = projectDocument?.data?.data();
+  const {
+    data: mockGroupCollectionSnapshot,
+    isLoading: isLoadingMockGroupCollection,
+  } = useGetMockGroupCollection(projectId as string);
   const [webUrlBase, setWebUrlBase] = useState(defaultWebUrlBases[0]);
-  const { push, query } = useRouter();
 
   return (
     <Layout
+      isLoading={projectDocument?.isLoading || isLoadingMockGroupCollection}
       sidebar={
         <Stack justify="start" direction="column" align="center">
           <Box padding="XLarge">
             <Stack direction="column" spacing="large">
-              <Heading type="display">Manage My Booking</Heading>
+              <Heading type="display">{projectData?.projectName}</Heading>
               <Heading type="displaySubtitle">
-                Refunds, Ancillaries, Check-in, Schedule Changes...
+                {projectData?.projectDescription}
               </Heading>
               <Stack align="center" justify="center">
                 <Illustration name="Lounge" />
@@ -101,14 +91,18 @@ const Mocks: NextPage = () => {
             title="Create new Mock"
             type="secondary"
             onClick={() => {
-              push(`${query.projectId}/mock-group-edit`);
+              push(`${projectId}/mock-group-edit`);
             }}
           >
             New Mock Group
           </Button>
         </Stack>
-        {mockGroups.map((mockGroup) => (
-          <MockGroupCard mockGroup={mockGroup} key={mockGroup.id} />
+        {mockGroupCollectionSnapshot?.docs.map((mockGroup) => (
+          <MockGroupCard
+            mockGroup={mockGroup.data()}
+            mockGroupId={mockGroup.id}
+            key={mockGroup.id}
+          />
         ))}
       </Stack>
     </Layout>

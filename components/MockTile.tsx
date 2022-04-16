@@ -2,41 +2,41 @@ import Stack from "@kiwicom/orbit-components/lib/Stack";
 import Button from "@kiwicom/orbit-components/lib/Button";
 import Tile from "@kiwicom/orbit-components/lib/Tile";
 import Text from "@kiwicom/orbit-components/lib/Text";
-import { Check, Alert, Send, Edit } from "@kiwicom/orbit-components/lib/icons";
+import { Send, Edit } from "@kiwicom/orbit-components/lib/icons";
 import ButtonLink from "@kiwicom/orbit-components/lib/ButtonLink";
-import { Badge } from "@kiwicom/orbit-components";
 import { ReactElement } from "react";
 import { useRouter } from "next/router";
-
-export type Mock = {
-  title: string;
-  description?: string;
-  id: string;
-  status: "active" | "outdated";
-};
+import { ApiMock, EndpointMockValidityEnum } from "../utils/types";
+import EndpointMockValidityIcon from "./EndpointMockValidityIcon";
 
 type MockTileProps = {
-  mock: Mock;
+  mock: ApiMock;
+  mockId: string;
+  mockGroupId: string;
 };
 
-const MockTile = ({ mock }: MockTileProps): ReactElement => {
+const MockTile = ({
+  mock,
+  mockId,
+  mockGroupId,
+}: MockTileProps): ReactElement => {
   const { asPath } = useRouter();
+  const hasSchemaViolatingResponse = mock.endpointMockCollection.some(
+    (endpoint) => endpoint.validity === EndpointMockValidityEnum.VIOLATES_SCHEMA
+  );
 
   return (
-    <Tile noPadding key={mock.id}>
+    <Tile noPadding>
       <Stack direction="row" align="center" spacing="none">
         <ButtonLink
           fullWidth
           iconLeft={<Send />}
           iconRight={
-            <Badge
-              type={
-                mock.status === "active"
-                  ? "successInverted"
-                  : "criticalInverted"
-              }
-              icon={mock.status === "active" ? <Check /> : <Alert />}
-            />
+            hasSchemaViolatingResponse && (
+              <EndpointMockValidityIcon
+                validity={EndpointMockValidityEnum.VIOLATES_SCHEMA}
+              />
+            )
           }
         >
           <Text type="primary" weight="bold">
@@ -45,7 +45,7 @@ const MockTile = ({ mock }: MockTileProps): ReactElement => {
           <Text>{mock.description}</Text>
         </ButtonLink>
         <Button
-          href={`${asPath}/mock-group/5464/mock-edit/${mock.id}`}
+          href={`${asPath}/mock-group/${mockGroupId}/mock-edit/${mockId}`}
           type="white"
           iconLeft={<Edit />}
         />

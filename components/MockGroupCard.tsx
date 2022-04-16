@@ -6,42 +6,54 @@ import TileGroup from "@kiwicom/orbit-components/lib/TileGroup";
 import Tile from "@kiwicom/orbit-components/lib/Tile";
 import { Edit, Plus } from "@kiwicom/orbit-components/lib/icons";
 import { ReactElement } from "react";
-import MockTile, { Mock } from "./MockTile";
+import MockTile from "./MockTile";
 import { useRouter } from "next/router";
-
-export type MockGroup = {
-  mocks: Array<Mock>;
-  id: string;
-  title: string;
-  description: string;
-};
+import { MockGroup } from "../utils/types";
+import useGetMockCollection from "../utils/hooks/useGetMockCollection";
 
 type MockGroupProps = {
   mockGroup: MockGroup;
+  mockGroupId: string;
 };
 
-const MockGroupCard = ({ mockGroup }: MockGroupProps): ReactElement => {
-  const { asPath } = useRouter();
+const MockGroupCard = ({
+  mockGroup,
+  mockGroupId,
+}: MockGroupProps): ReactElement => {
+  const {
+    asPath,
+    query: { projectId },
+  } = useRouter();
+  const { data: mockCollectionSnapshot } = useGetMockCollection(
+    projectId as string,
+    mockGroupId
+  );
+
   return (
     <CardSection
       expandable
       expanded
       title={
         <Stack inline align="center">
-          <Heading type="title2">{mockGroup.title}</Heading>
+          <Heading type="title2">{mockGroup.mockGroupName}</Heading>
           <Button size="small" type="white" iconLeft={<Edit />} />
         </Stack>
       }
-      description={mockGroup.description}
+      description={mockGroup.mockGroupDescription}
     >
       <TileGroup>
-        {mockGroup.mocks.map((mock) => (
-          <MockTile mock={mock} key={mock.id} />
+        {mockCollectionSnapshot?.docs.map((mock) => (
+          <MockTile
+            mockId={mock.id}
+            mock={mock.data()}
+            mockGroupId={mockGroupId}
+            key={mock.id}
+          />
         ))}
         <Tile noPadding>
           <Stack justify="center">
             <Button
-              href={`${asPath}/mock-group/1234/mock-edit/`}
+              href={`${asPath}/mock-group/${mockGroupId}/mock-edit/`}
               fullWidth
               type="white"
               iconLeft={<Plus />}
