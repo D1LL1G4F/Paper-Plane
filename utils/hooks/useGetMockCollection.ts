@@ -7,12 +7,12 @@ import {
 } from "@firebase/firestore";
 import { useFirestoreQuery } from "@react-query-firebase/firestore";
 import { UseQueryResult } from "react-query";
-import { ApiMock } from "../types";
+import { Mock } from "../types";
 
 const useGetMockCollection = (
   projectId: string,
   mockGroupId: string
-): UseQueryResult<QuerySnapshot<ApiMock>, FirestoreError> => {
+): UseQueryResult<QuerySnapshot<Mock>, FirestoreError> => {
   const firestore = useFirestore();
   const ref = query(
     collection(

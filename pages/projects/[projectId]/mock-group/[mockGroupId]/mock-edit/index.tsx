@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import Heading from "@kiwicom/orbit-components/lib/Heading";
 import Stack from "@kiwicom/orbit-components/lib/Stack";
 import Box from "@kiwicom/orbit-components/lib/Box";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import InputField from "@kiwicom/orbit-components/lib/InputField";
 import { Separator } from "@kiwicom/orbit-components";
 import Button from "@kiwicom/orbit-components/lib/Button";
@@ -12,22 +12,107 @@ import { MockEditForm } from "../../../../../../utils/types";
 import { mockEditValidationSchema } from "../../../../../../utils/validationSchemas";
 import Layout from "../../../../../../components/Layout";
 import ApiCard from "../../../../../../components/ApiCard";
+import useGetMockDocument from "../../../../../../utils/hooks/useGetMockDocument";
+import useGetProjectDocument from "../../../../../../utils/hooks/useGetProjectDocument";
+import useGetMockGroupDocument from "../../../../../../utils/hooks/useGetMockGroupDocument";
+import useMockMutation from "../../../../../../utils/hooks/useMockMutation";
+import mergeApiMocks from "../../../../../../utils/mergeApiMocks";
+import filterChangedApiMocks from "../../../../../../utils/filterChangedApiMocks";
+import { useEffect } from "react";
 
 const MockEdit: NextPage = () => {
   const form = useForm<MockEditForm>({
+    mode: "all",
     resolver: zodResolver(mockEditValidationSchema),
+    defaultValues: {
+      apiMockCollection: [],
+    },
   });
-  const { basePath } = useRouter();
+  const {
+    basePath,
+    query: { projectId, mockGroupId, mockId },
+    push,
+  } = useRouter();
+  const { handleSubmit, watch, control, reset } = form;
 
-  const { handleSubmit, watch, control } = form;
+  const mockDocument = useGetMockDocument(
+    projectId as string,
+    mockGroupId as string,
+    mockId as string | undefined
+  );
+  const mockGroupDocument = useGetMockGroupDocument(
+    projectId as string,
+    mockGroupId as string
+  );
+  const projectDocument = useGetProjectDocument(projectId as string);
+  const { mutate } = useMockMutation(
+    projectId as string,
+    mockGroupId as string,
+    mockId as string | undefined
+  );
 
-  // eslint-disable-next-line no-warning-comments
-  // todo: update to DB
-  const onSubmit = handleSubmit((data) => data);
+  const onSubmit = handleSubmit((data) => {
+    const project = projectDocument?.data?.data();
+    const mockGroup = mockGroupDocument?.data?.data();
+    const mock = mockDocument?.data?.data();
+    if (project && mockGroup) {
+      const mergedApiMocks = mergeApiMocks(
+        project.apiMockCollection,
+        mockGroup.apiMockCollection,
+        mock?.apiMockCollection
+      );
+      const changedApiMocks = filterChangedApiMocks(
+        mergedApiMocks,
+        data.apiMockCollection
+      );
+      mutate({ ...data, apiMockCollection: changedApiMocks });
+      push(`/projects/${projectId}`);
+    }
+  });
+
+  useEffect(() => {
+    const project = projectDocument?.data?.data();
+    const mockGroup = mockGroupDocument?.data?.data();
+    const mock = mockDocument?.data?.data();
+    if (
+      projectId &&
+      project &&
+      mockGroup &&
+      !mockGroupDocument?.isLoading &&
+      !projectDocument?.isLoading
+    ) {
+      reset({
+        mockName: "",
+        mockDescription: "",
+        clientUrl: mockGroup.clientUrl,
+        apiOverrideUrlParamName: mockGroup.apiOverrideUrlParamName,
+        ...mock,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore - some form typing weirdness
+        apiMockCollection: mergeApiMocks(
+          project.apiMockCollection,
+          mockGroup.apiMockCollection,
+          mock?.apiMockCollection
+        ),
+      });
+    }
+  }, [
+    projectId,
+    mockGroupDocument?.isLoading,
+    projectDocument?.isLoading,
+    mockDocument?.isLoading,
+  ]);
+
+  const apiMockCollection = useWatch({ name: "apiMockCollection", control });
 
   return (
     <>
       <Layout
+        isLoading={
+          mockGroupDocument?.isLoading ||
+          projectDocument?.isLoading ||
+          mockDocument?.isLoading
+        }
         sidebar={
           <Stack justify="start" direction="column" align="center">
             <Box padding="XLarge" width="100%">
@@ -108,9 +193,13 @@ const MockEdit: NextPage = () => {
             <Stack direction="row" justify="between" align="center">
               <Heading type="title2">Server</Heading>
             </Stack>
-            {/* TODO map on data from DB*/}
-            {[].map((apiMock, index) => (
-              <ApiCard key={index} form={form} {...apiMock} />
+            {apiMockCollection.map((apiMock, index) => (
+              <ApiCard
+                fieldArrayName={`apiMockCollection.${index}.endpointMockCollection`}
+                key={index}
+                control={control}
+                {...apiMock}
+              />
             ))}
             <Separator />
             <Stack direction="row-reverse">

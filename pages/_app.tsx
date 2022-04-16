@@ -7,12 +7,13 @@ import ThemeProvider from "@kiwicom/orbit-components/lib/ThemeProvider";
 import { defaultTheme } from "@kiwicom/orbit-components";
 import "normalize.css/normalize.css";
 import { AuthProvider } from "../components/contexts/Auth";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClientProvider } from "react-query";
 import JSONSchemaFaker from "json-schema-faker";
 import Chance from "chance";
 import { ReactQueryDevtools } from "react-query/devtools";
 import firebase from "../utils/firebase";
 import Faker from "@faker-js/faker";
+import queryClient from "../utils/queryClient";
 
 const NavContainer = styled.header`
   z-index: 99;
@@ -25,7 +26,6 @@ const GridWrapper = styled(Grid)`
 
 // eslint-disable-next-line no-unused-expressions,babel/no-unused-expressions
 firebase;
-const queryClient = new QueryClient();
 JSONSchemaFaker.extend("chance", () => new Chance(42));
 JSONSchemaFaker.extend("faker", () => Faker);
 JSONSchemaFaker.option({

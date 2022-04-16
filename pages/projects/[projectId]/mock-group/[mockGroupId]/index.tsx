@@ -74,10 +74,11 @@ const MockGroupEdit: NextPage = () => {
       !projectDocument?.isLoading
     ) {
       reset({
+        mockGroupName: "",
+        mockGroupDescription: "",
+        clientUrl: project.clientUrl,
+        apiOverrideUrlParamName: project.apiOverrideUrlParamName,
         ...mockGroup,
-        clientUrl: mockGroup?.clientUrl || project.clientUrl,
-        apiOverrideUrlParamName:
-          mockGroup?.apiOverrideUrlParamName || project.apiOverrideUrlParamName,
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore - some form typing weirdness
         apiMockCollection: mergeApiMocks(

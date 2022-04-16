@@ -36,7 +36,12 @@ const MockGroupCard = ({
       title={
         <Stack inline align="center">
           <Heading type="title2">{mockGroup.mockGroupName}</Heading>
-          <Button size="small" type="white" iconLeft={<Edit />} />
+          <Button
+            href={`${asPath}/mock-group/${mockGroupId}`}
+            size="small"
+            type="white"
+            iconLeft={<Edit />}
+          />
         </Stack>
       }
       description={mockGroup.mockGroupDescription}

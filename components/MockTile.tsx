@@ -6,11 +6,11 @@ import { Send, Edit } from "@kiwicom/orbit-components/lib/icons";
 import ButtonLink from "@kiwicom/orbit-components/lib/ButtonLink";
 import { ReactElement } from "react";
 import { useRouter } from "next/router";
-import { ApiMock, EndpointMockValidityEnum } from "../utils/types";
+import { EndpointMockValidityEnum, Mock } from "../utils/types";
 import EndpointMockValidityIcon from "./EndpointMockValidityIcon";
 
 type MockTileProps = {
-  mock: ApiMock;
+  mock: Mock;
   mockId: string;
   mockGroupId: string;
 };
@@ -21,8 +21,11 @@ const MockTile = ({
   mockGroupId,
 }: MockTileProps): ReactElement => {
   const { asPath } = useRouter();
-  const hasSchemaViolatingResponse = mock.endpointMockCollection.some(
-    (endpoint) => endpoint.validity === EndpointMockValidityEnum.VIOLATES_SCHEMA
+  const hasSchemaViolatingResponse = mock.apiMockCollection.some((apiMock) =>
+    apiMock.endpointMockCollection.some(
+      (endpoint) =>
+        endpoint.validity === EndpointMockValidityEnum.VIOLATES_SCHEMA
+    )
   );
 
   return (
@@ -40,9 +43,9 @@ const MockTile = ({
           }
         >
           <Text type="primary" weight="bold">
-            {mock.title}
+            {mock.mockName}
           </Text>
-          <Text>{mock.description}</Text>
+          <Text>{mock.mockDescription}</Text>
         </ButtonLink>
         <Button
           href={`${asPath}/mock-group/${mockGroupId}/mock-edit/${mockId}`}

@@ -13,6 +13,7 @@ import {
 } from "@react-query-firebase/firestore";
 import { Project } from "../types";
 import { UseMutationResult } from "react-query";
+import queryClient from "../queryClient";
 
 /**
  * Mutates existing project or adds a new one if projectId not provided
@@ -30,6 +31,11 @@ const useProjectMutation = (
     doc<Project>(ref as CollectionReference<Project>, projectId || "0"),
     {
       merge: true,
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries([`projects`, `projects/${projectId}`]);
+      },
     }
   );
   const collectionMutation = useFirestoreCollectionMutation<Project>(

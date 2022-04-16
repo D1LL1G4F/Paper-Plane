@@ -7,25 +7,25 @@ import {
 } from "@firebase/firestore";
 import { useFirestoreDocument } from "@react-query-firebase/firestore";
 import { UseQueryResult } from "react-query";
-import { ApiMock } from "../types";
+import { Mock } from "../types";
 
 const useGetMockDocument = (
   projectId: string,
   mockGroupId: string,
   mockId?: string
-): UseQueryResult<DocumentSnapshot<ApiMock>, FirestoreError> | null => {
+): UseQueryResult<DocumentSnapshot<Mock>, FirestoreError> | null => {
   const firestore = useFirestore();
   const ref = doc(
     firestore,
     `projects/${projectId}/mockGroupCollection/${mockGroupId}/mockCollection`,
     mockId || "0"
   );
-  const mock = useFirestoreDocument<ApiMock, DocumentSnapshot<ApiMock>>(
+  const mock = useFirestoreDocument<Mock, DocumentSnapshot<Mock>>(
     [
       `projects/${projectId}/mockGroupCollection/${mockGroupId}/mockCollection`,
       mockId,
     ],
-    ref as DocumentReference<ApiMock>
+    ref as DocumentReference<Mock>
   );
 
   if (!mock) {

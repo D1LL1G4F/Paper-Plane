@@ -81,6 +81,8 @@ export type ProjectEditForm = {
   apiMockCollection: Array<ApiMock>;
 };
 
+export type Mock = MockEditForm;
+
 export type MockGroup = MockGroupEditForm & {
   mockCollection?: CollectionReference<MockEditForm>;
 };

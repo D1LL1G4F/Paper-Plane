@@ -13,6 +13,7 @@ import {
 } from "@react-query-firebase/firestore";
 import { MockGroup } from "../types";
 import { UseMutationResult } from "react-query";
+import queryClient from "../queryClient";
 
 /**
  * Mutates existing mock group or adds a new one if mockGroupId not provided
@@ -34,6 +35,14 @@ const useMockGroupMutation = (
     doc<MockGroup>(ref as CollectionReference<MockGroup>, mockGroupId || "0"),
     {
       merge: true,
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries([
+          `projects/${projectId}/mockGroupCollection`,
+          `projects/${projectId}/mockGroupCollection/${mockGroupId}`,
+        ]);
+      },
     }
   );
   const collectionMutation = useFirestoreCollectionMutation<MockGroup>(

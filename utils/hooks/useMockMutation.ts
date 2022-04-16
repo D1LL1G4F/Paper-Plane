@@ -11,8 +11,9 @@ import {
   useFirestoreCollectionMutation,
   useFirestoreDocumentMutation,
 } from "@react-query-firebase/firestore";
-import { ApiMock } from "../types";
+import { Mock } from "../types";
 import { UseMutationResult } from "react-query";
+import queryClient from "../queryClient";
 
 /**
  * Mutates existing mock or adds a new one if mockId not provided
@@ -22,23 +23,31 @@ const useMockMutation = (
   mockGroupId: string,
   mockId?: string
 ): UseMutationResult<
-  void | DocumentReference<ApiMock>,
+  void | DocumentReference<Mock>,
   FirestoreError,
-  WithFieldValue<ApiMock>
+  WithFieldValue<Mock>
 > => {
   const firestore = useFirestore();
   const ref = collection(
     firestore,
     `projects/${projectId}/mockGroupCollection/${mockGroupId}/mockCollection`
   );
-  const documentMutation = useFirestoreDocumentMutation<ApiMock>(
-    doc<ApiMock>(ref as CollectionReference<ApiMock>, mockId || "0"),
+  const documentMutation = useFirestoreDocumentMutation<Mock>(
+    doc<Mock>(ref as CollectionReference<Mock>, mockId || "0"),
     {
       merge: true,
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries([
+          `projects/${projectId}/mockGroupCollection/${mockGroupId}/mockCollection`,
+          `projects/${projectId}/mockGroupCollection/${mockGroupId}/mockCollection/${mockId}`,
+        ]);
+      },
     }
   );
-  const collectionMutation = useFirestoreCollectionMutation<ApiMock>(
-    ref as CollectionReference<ApiMock>
+  const collectionMutation = useFirestoreCollectionMutation<Mock>(
+    ref as CollectionReference<Mock>
   );
 
   return mockId ? documentMutation : collectionMutation;
