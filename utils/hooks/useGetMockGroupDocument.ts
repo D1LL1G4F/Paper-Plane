@@ -12,25 +12,19 @@ import { MockGroup } from "../types";
 const useGetMockGroupDocument = (
   projectId: string,
   mockGroupId?: string
-): UseQueryResult<DocumentSnapshot<MockGroup>, FirestoreError> | null => {
+): UseQueryResult<DocumentSnapshot<MockGroup>, FirestoreError> => {
   const firestore = useFirestore();
   const ref = doc(
     firestore,
     `projects/${projectId}/mockGroupCollection`,
     mockGroupId || "0"
   );
-  const mockGroup = useFirestoreDocument<
-    MockGroup,
-    DocumentSnapshot<MockGroup>
-  >(
+  return useFirestoreDocument<MockGroup, DocumentSnapshot<MockGroup>>(
     [`projects/${projectId}/mockGroupCollection`, mockGroupId],
-    ref as DocumentReference<MockGroup>
+    ref as DocumentReference<MockGroup>,
+    { subscribe: true },
+    { enabled: Boolean(projectId) }
   );
-
-  if (!mockGroupId) {
-    return null;
-  }
-  return mockGroup;
 };
 
 export default useGetMockGroupDocument;

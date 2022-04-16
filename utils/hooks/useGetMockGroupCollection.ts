@@ -16,9 +16,14 @@ const useGetMockGroupCollection = (
   const ref = query(
     collection(firestore, `projects/${projectId}/mockGroupCollection`)
   );
-  return useFirestoreQuery([`projects/${projectId}/mockGroupCollection`], ref, {
-    subscribe: true,
-  });
+  return useFirestoreQuery(
+    [`projects/${projectId}/mockGroupCollection`],
+    ref,
+    {
+      subscribe: true,
+    },
+    { enabled: Boolean(projectId) }
+  );
 };
 
 export default useGetMockGroupCollection;

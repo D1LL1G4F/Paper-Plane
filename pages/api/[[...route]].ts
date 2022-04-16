@@ -1,20 +1,20 @@
 /* eslint-disable babel/camelcase */
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
+import cors from "cors";
+import initMiddleware from "../../utils/initMiddleware";
 
-type Data = {
-  name: string;
-  mocked_route: string;
-  method: string | undefined;
-  request_body: unknown;
-};
+// Initialize the cors middleware
+const corsMiddleware = initMiddleware(cors());
 
-export default function handler(
+export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data>
-): void {
+  res: NextApiResponse<unknown>
+): Promise<void> {
   const { route } = req.query;
   const mockedRoute = Array.isArray(route) ? route.join("/") : route;
+
+  await corsMiddleware(req, res);
+
   res.status(200).json({
     name: "Mocked API response",
     mocked_route: mockedRoute,

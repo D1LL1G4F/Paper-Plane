@@ -34,7 +34,7 @@ const useProjectMutation = (
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries([`projects`, `projects/${projectId}`]);
+        queryClient.removeQueries();
       },
     }
   );

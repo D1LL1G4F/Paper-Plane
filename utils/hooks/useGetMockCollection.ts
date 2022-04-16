@@ -25,7 +25,8 @@ const useGetMockCollection = (
     ref,
     {
       subscribe: true,
-    }
+    },
+    { enabled: Boolean(projectId && mockGroupId) }
   );
 };
 

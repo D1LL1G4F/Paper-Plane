@@ -13,14 +13,19 @@ type MockTileProps = {
   mock: Mock;
   mockId: string;
   mockGroupId: string;
+  webUrlBase: string;
 };
 
 const MockTile = ({
   mock,
   mockId,
   mockGroupId,
+  webUrlBase,
 }: MockTileProps): ReactElement => {
-  const { asPath } = useRouter();
+  const {
+    asPath,
+    query: { projectId },
+  } = useRouter();
   const hasSchemaViolatingResponse = mock.apiMockCollection.some((apiMock) =>
     apiMock.endpointMockCollection.some(
       (endpoint) =>
@@ -28,10 +33,17 @@ const MockTile = ({
     )
   );
 
+  const mockApiBase = `${window.location.origin}/api/projectId/${projectId}/mockGroupId/${mockGroupId}/mockId/${mockId}`;
+
+  const mockUrl: URL = new URL(mock.clientUrl);
+  mockUrl.host = webUrlBase;
+  mockUrl.searchParams.set(mock.apiOverrideUrlParamName, mockApiBase);
+
   return (
     <Tile noPadding>
       <Stack direction="row" align="center" spacing="none">
         <ButtonLink
+          href={mockUrl.toString()}
           fullWidth
           iconLeft={<Send />}
           iconRight={

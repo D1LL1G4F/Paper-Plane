@@ -20,18 +20,15 @@ const useGetMockDocument = (
     `projects/${projectId}/mockGroupCollection/${mockGroupId}/mockCollection`,
     mockId || "0"
   );
-  const mock = useFirestoreDocument<Mock, DocumentSnapshot<Mock>>(
+  return useFirestoreDocument<Mock, DocumentSnapshot<Mock>>(
     [
       `projects/${projectId}/mockGroupCollection/${mockGroupId}/mockCollection`,
       mockId,
     ],
-    ref as DocumentReference<Mock>
+    ref as DocumentReference<Mock>,
+    { subscribe: true },
+    { enabled: Boolean(projectId && mockGroupId) }
   );
-
-  if (!mock) {
-    return null;
-  }
-  return mock;
 };
 
 export default useGetMockDocument;

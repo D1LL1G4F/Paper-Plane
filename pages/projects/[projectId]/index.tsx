@@ -8,14 +8,14 @@ import MockGroupCard from "../../../components/MockGroupCard";
 import InputGroup from "@kiwicom/orbit-components/lib/InputGroup";
 import InputField from "@kiwicom/orbit-components/lib/InputField";
 import Select from "@kiwicom/orbit-components/lib/Select";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import Illustration from "@kiwicom/orbit-components/lib/Illustration";
 import Layout from "../../../components/Layout";
 import { useRouter } from "next/router";
 import useGetProjectDocument from "../../../utils/hooks/useGetProjectDocument";
 import useGetMockGroupCollection from "../../../utils/hooks/useGetMockGroupCollection";
 
-const defaultWebUrlBases = ["https://kiwi.com", "https://localhost:3000"];
+const defaultWebUrlBases = ["localhost:3000", "localhost:8000"];
 
 const Mocks: NextPage = () => {
   const {
@@ -29,6 +29,25 @@ const Mocks: NextPage = () => {
     isLoading: isLoadingMockGroupCollection,
   } = useGetMockGroupCollection(projectId as string);
   const [webUrlBase, setWebUrlBase] = useState(defaultWebUrlBases[0]);
+  const [webUrlBaseOptions, setWebUrlBaseOptions] = useState([
+    ...defaultWebUrlBases.map((url) => ({
+      value: url,
+      label: url,
+    })),
+  ]);
+
+  useEffect(() => {
+    if (projectData) {
+      const projectUrlBase = new URL(projectData.clientUrl).host;
+      setWebUrlBaseOptions(
+        webUrlBaseOptions.concat({
+          value: projectUrlBase,
+          label: projectUrlBase,
+        })
+      );
+      setWebUrlBase(projectUrlBase);
+    }
+  }, [projectDocument?.isLoading]);
 
   return (
     <Layout
@@ -63,18 +82,12 @@ const Mocks: NextPage = () => {
                 />
                 <Select
                   value={webUrlBase}
-                  onChange={(event) =>
+                  onChange={(event) => {
                     setWebUrlBase(
                       (event as ChangeEvent<HTMLSelectElement>).target.value
-                    )
-                  }
-                  options={[
-                    ...defaultWebUrlBases.map((url) => ({
-                      value: url,
-                      label: url,
-                    })),
-                    { value: webUrlBase, label: "custom" },
-                  ]}
+                    );
+                  }}
+                  options={webUrlBaseOptions}
                 />
               </InputGroup>
             </Box>
@@ -99,6 +112,7 @@ const Mocks: NextPage = () => {
         </Stack>
         {mockGroupCollectionSnapshot?.docs.map((mockGroup) => (
           <MockGroupCard
+            webUrlBase={webUrlBase}
             mockGroup={mockGroup.data()}
             mockGroupId={mockGroup.id}
             key={mockGroup.id}

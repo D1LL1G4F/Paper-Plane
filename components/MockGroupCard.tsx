@@ -5,7 +5,7 @@ import { CardSection } from "@kiwicom/orbit-components/lib/Card";
 import TileGroup from "@kiwicom/orbit-components/lib/TileGroup";
 import Tile from "@kiwicom/orbit-components/lib/Tile";
 import { Edit, Plus } from "@kiwicom/orbit-components/lib/icons";
-import { ReactElement } from "react";
+import { ReactElement, useState } from "react";
 import MockTile from "./MockTile";
 import { useRouter } from "next/router";
 import { MockGroup } from "../utils/types";
@@ -14,12 +14,15 @@ import useGetMockCollection from "../utils/hooks/useGetMockCollection";
 type MockGroupProps = {
   mockGroup: MockGroup;
   mockGroupId: string;
+  webUrlBase: string;
 };
 
 const MockGroupCard = ({
   mockGroup,
   mockGroupId,
+  webUrlBase,
 }: MockGroupProps): ReactElement => {
+  const [isExpanded, setIsExpanded] = useState(false);
   const {
     asPath,
     query: { projectId },
@@ -32,7 +35,8 @@ const MockGroupCard = ({
   return (
     <CardSection
       expandable
-      expanded
+      onClick={() => setIsExpanded(!isExpanded)}
+      expanded={isExpanded}
       title={
         <Stack inline align="center">
           <Heading type="title2">{mockGroup.mockGroupName}</Heading>
@@ -49,6 +53,7 @@ const MockGroupCard = ({
       <TileGroup>
         {mockCollectionSnapshot?.docs.map((mock) => (
           <MockTile
+            webUrlBase={webUrlBase}
             mockId={mock.id}
             mock={mock.data()}
             mockGroupId={mockGroupId}

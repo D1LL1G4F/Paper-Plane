@@ -38,10 +38,7 @@ const useMockGroupMutation = (
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries([
-          `projects/${projectId}/mockGroupCollection`,
-          `projects/${projectId}/mockGroupCollection/${mockGroupId}`,
-        ]);
+        queryClient.removeQueries();
       },
     }
   );
