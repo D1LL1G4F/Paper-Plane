@@ -10,7 +10,6 @@ import { AuthProvider } from "../components/contexts/Auth";
 import { QueryClientProvider } from "react-query";
 import JSONSchemaFaker from "json-schema-faker";
 import Chance from "chance";
-import { ReactQueryDevtools } from "react-query/devtools";
 import firebase from "../utils/firebase";
 import Faker from "@faker-js/faker";
 import queryClient from "../utils/queryClient";
@@ -50,7 +49,6 @@ function MyApp({ Component, pageProps }: AppProps): ReactElement {
             </NavContainer>
             <Component {...pageProps} />
           </GridWrapper>
-          <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </AuthProvider>
     </ThemeProvider>

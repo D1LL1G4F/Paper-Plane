@@ -11,7 +11,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Select from "@kiwicom/orbit-components/lib/Select";
 import Illustration from "@kiwicom/orbit-components/lib/Illustration";
 import illustrations from "../../../utils/illustations";
-import { DevTool } from "@hookform/devtools";
 
 import { useEffect, useState } from "react";
 import AddNewAPIModal from "../../../components/AddNewAPIModal";
@@ -94,7 +93,6 @@ const ProjectEdit: NextPage = () => {
         }
       >
         <form onSubmit={onSubmit}>
-          <DevTool control={control} />
           <Stack spacing="XLarge">
             <Stack>
               <Controller
