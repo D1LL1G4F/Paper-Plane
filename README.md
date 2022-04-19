@@ -32,12 +32,19 @@
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
-Paper Plane is a web application for
+Paper Plane is a web application for creating and managing product mocks. The whole application in based
+on Firebase platform. Paper Plane takes advantage of OpenAPI standard and uses it for generation and validation
+of mocked API responses.
 
 ### Built With
 
 - [Next.js](https://nextjs.org/)
 - [React.js](https://reactjs.org/)
+- [Orbit](https://orbit.kiwi/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Firebase](https://firebase.google.com/)
+- [json-schema-faker](https://github.com/json-schema-faker/json-schema-faker)
+- [react-hook-form](https://react-hook-form.com/)
 
 <!-- GETTING STARTED -->
 
@@ -45,6 +52,7 @@ Paper Plane is a web application for
 
 1. **Setup Firebase ENV variables** - create `.env.local` based on `.env.local.example`
 2. **Generate Firebase Admin SDK private key** - add `serviceAccountKey.json` to root folder with generate private key for Firebase Admin SDK access
+3. todo...
 
 ### Prerequisites
 
