@@ -10,7 +10,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/D1LL1G4F/Paper-Plane">
-    <img src="public/PaperPlaneLogo640x464.png" alt="Logo" width="80" height="80">
+    <img src="public/PaperPlaneLogo640x464.png" alt="Logo" width="320" height="232">
   </a>
 
 <h1 align="center">Paper Plane</h1>
